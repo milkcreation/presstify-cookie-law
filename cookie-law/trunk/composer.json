@@ -7,10 +7,10 @@
     "plugins",
     "wordpress",
     "cookie",
-    "rgpd"
+    "gprd"
   ],
   "homepage": "https://svn.tigreblanc.fr/presstify-plugins/cookie-law",
-  "time": "2018-04-28",
+  "time": "2018-05-22",
   "license": "proprietary",
   "authors": [
     {
@@ -27,7 +27,7 @@
   ],
   "require": {
     "composer/installers": "~1.0",
-    "presstify/framework": "^1.5"
+    "presstify/framework": "^2.0"
   },
   "autoload": {
     "psr-4": {

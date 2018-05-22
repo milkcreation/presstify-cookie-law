@@ -6,7 +6,7 @@
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package presstiFy
  * @namespace tiFy\Plugins\CookieLaw
- * @version 0.0.0
+ * @version 2.0.0
  */
 
 namespace tiFy\Plugins\CookieLaw;
