@@ -1,0 +1,93 @@
+.tiFyPluginCookieLaw {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 10px 100px;
+    text-align: center;
+    z-index: 1500;
+}
+
+.tiFyPluginCookieLaw[aria-hide="true"] {
+    display: none;
+}
+
+.tiFyPluginCookieLaw [aria-toggle="dismiss"] {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 5px;
+    z-index: 1;
+
+    font-size: 24px;
+    line-height: 24px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.tiFyPluginCookieLaw-Text {
+    margin-bottom: 10px;
+}
+
+.tiFyPluginCookieLaw-Button {
+    display: inline-block;
+    margin: 0 2px;
+    padding: 0.6em 1.2em;
+
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.tiFyPluginCookieLaw--dark {
+    background-color: #2B2B2B;
+    color: #FFF;
+}
+
+.tiFyPluginCookieLaw--dark [aria-toggle="dismiss"] {
+    color: #FFF;
+}
+
+.tiFyPluginCookieLaw--dark [aria-toggle="dismiss"]:hover {
+    color: #999;
+}
+
+.tiFyPluginCookieLaw--dark .tiFyPluginCookieLaw-Button,
+.tiFyPluginCookieLaw--dark .tiFyPluginCookieLaw-Button:visited {
+    color: #FFF;
+    border: solid 1px #FFF;
+}
+
+.tiFyPluginCookieLaw--dark .tiFyPluginCookieLaw-Button:hover,
+.tiFyPluginCookieLaw--dark .tiFyPluginCookieLaw-Button:active,
+.tiFyPluginCookieLaw--dark .tiFyPluginCookieLaw-Button:focus {
+    color: #999;
+    border-color: #999;
+}
+
+.tiFyPluginCookieLaw--light {
+    background-color: #FFF;
+    color: #2B2B2B;
+}
+
+.tiFyPluginCookieLaw--light [aria-toggle="dismiss"] {
+    color: #2B2B2B;
+}
+
+.tiFyPluginCookieLaw--light [aria-toggle="dismiss"]:hover {
+    color: #999;
+}
+
+.tiFyPluginCookieLaw--light .tiFyPluginCookieLaw-Button,
+.tiFyPluginCookieLaw--light .tiFyPluginCookieLaw-Button:visited {
+    color: #2B2B2B;
+    border: solid 1px #2B2B2B;
+}
+
+.tiFyPluginCookieLaw--light .tiFyPluginCookieLaw-Button:hover,
+.tiFyPluginCookieLaw--light .tiFyPluginCookieLaw-Button:active,
+.tiFyPluginCookieLaw--light .tiFyPluginCookieLaw-Button:focus {
+    color: #999;
+    border-color: #999;
+}
