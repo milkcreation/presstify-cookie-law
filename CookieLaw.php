@@ -12,10 +12,10 @@
 namespace tiFy\Plugins\CookieLaw;
 
 use Illuminate\Support\Arr;
-use tiFy\Apps\AppController;
+use tiFy\App\Dependency\AbstractAppDependency;
 use tiFy\Partial\Partial;
 
-class CookieLaw extends AppController
+class CookieLaw extends AbstractAppDependency
 {
     /**
      * Liste des attributs de configuration.
@@ -62,20 +62,18 @@ class CookieLaw extends AppController
     }
 
     /**
-     * Initialisation du controleur.
-     *
-     * @return void
+     * {@inheritdoc}
      */
-    public function appBoot()
+    public function boot()
     {
         if (is_admin()) :
             return;
         endif;
 
-        $this->appAddAction('init');
-        $this->appAddAction('wp_loaded');
-        $this->appAddAction('wp_enqueue_scripts');
-        $this->appAddAction('wp_footer');
+        $this->app->appAddAction('init', [$this, 'init']);
+        $this->app->appAddAction('wp_loaded', [$this, 'wp_loaded']);
+        $this->app->appAddAction('wp_enqueue_scripts', [$this, 'wp_enqueue_scripts']);
+        $this->app->appAddAction('wp_footer', [$this, 'wp_footer']);
     }
 
     /**
@@ -85,7 +83,7 @@ class CookieLaw extends AppController
      */
     public function display()
     {
-        return $this->appTemplateRender('cookie-law', $this->appConfig());
+        return $this->app->appTemplateRender('cookie-law', config('cookie-law', []));
     }
 
     /**
@@ -121,8 +119,8 @@ class CookieLaw extends AppController
     public function init()
     {
         \wp_register_style(
-            'tiFyPluginCookieLaw',
-            $this->appUrl(get_class()) . '/assets/css/styles.css',
+            'tiFyCookieLaw',
+            class_info($this)->getUrl() . '/assets/css/styles.css',
             [],
             180523
         );
@@ -139,7 +137,7 @@ class CookieLaw extends AppController
     {
         $this->set(
             'content',
-            '<div class="tiFyPluginCookieLaw-Text">' . $this->appTemplateRender('content') . '</div>'
+            '<div class="tiFyPluginCookieLaw-Text">' . $this->app->appTemplateRender('content') . '</div>'
         );
         $this->set(
             'accept.attrs.class',
@@ -148,7 +146,7 @@ class CookieLaw extends AppController
 
         $this->attributes = array_merge(
             $this->attributes,
-            $this->appConfig()
+            config('cookie-law', [])
         );
 
         if (!$this->has('accept.content')) :
@@ -182,7 +180,7 @@ class CookieLaw extends AppController
                                 'header' => '<div class="modal-header"><h2>' .
                                     __('Réglement Général sur la Protection des Données', 'tify') .
                                     '</h2></div>',
-                                'body'   => '<div class="modal-body">' . $this->appTemplateRender('policy') . '</div>',
+                                'body'   => '<div class="modal-body">' . $this->app->appTemplateRender('policy') . '</div>',
                                 'footer' => false
                             ]
                         ],
@@ -192,7 +190,7 @@ class CookieLaw extends AppController
             );
         endif;
 
-        $this->appSet('config', $this->all());
+        config(['cookie-law' => $this->all()]);
 
     }
 
@@ -218,10 +216,10 @@ class CookieLaw extends AppController
      */
     public function wp_enqueue_scripts()
     {
-        if($this->appConfig('enqueue_scripts', true)) :
-            $this->appServiceGet(Partial::class)->enqueue('CookieNotice');
-            $this->appServiceGet(Partial::class)->enqueue('Modal');
-            \wp_enqueue_style('tiFyPluginCookieLaw');
+        if(config('cookie-law.wp_enqueue_scripts', true)) :
+            partial('cookie-notice')->enqueue_scripts();
+            partial('modal')->enqueue_scripts();
+            \wp_enqueue_style('tiFyCookieLaw');
         endif;
     }
 
@@ -232,7 +230,7 @@ class CookieLaw extends AppController
      */
     public function wp_footer()
     {
-        if($this->appConfig('display', true)) :
+        if(config('cookie-law.display', true)) :
             echo $this->display();
         endif;
     }
