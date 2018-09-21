@@ -4,33 +4,57 @@
  * @name CookieLaw
  * @desc Extension PresstiFy de notification des règles cookie du site.
  * @author Jordy Manner <jordy@tigreblanc.fr>
- * @package presstiFy
+ * @package presstify-plugins/cookie-law
  * @namespace tiFy\Plugins\CookieLaw
  * @version 1.4.0
  */
 
 namespace tiFy\Plugins\CookieLaw;
 
-use App\AppResolverTrait;
 use tiFy\Contracts\Views\ViewsInterface;
 use tiFy\Contracts\Views\ViewInterface;
 use tiFy\Kernel\Parameters\AbstractParametersBag;
 use tiFy\PageHook\PageHook;
 
+/**
+ * Class CookieLaw
+ * @package tiFy\Plugins\CookieLaw
+ *
+ * Activation :
+ * ----------------------------------------------------------------------------------------------------
+ * Dans config/app.php ajouter \tiFy\Plugins\CookieLaw\CookieLaw à la liste des fournisseurs de services
+ *     chargés automatiquement par l'application.
+ * ex.
+ * <?php
+ * ...
+ * use tiFy\Plugins\CookieLaw\CookieLaw;
+ * ...
+ *
+ * return [
+ *      ...
+ *      'providers' => [
+ *          ...
+ *          CookieLaw::class
+ *          ...
+ *      ]
+ * ];
+ *
+ * Configuration :
+ * ----------------------------------------------------------------------------------------------------
+ * Dans le dossier de config, créer le fichier admin-ui.php
+ * @see /vendor/presstify-plugins/cookie-law/Resources/config/cookie-law.php Exemple de configuration
+ */
 class CookieLaw extends AbstractParametersBag
 {
-    use AppResolverTrait;
-
     /**
      * Liste des attributs de configuration.
      * @var array
      */
     protected $attributes = [
-        'id'                 => 'CookieLaw',
+        'admin'              => true,
         'display'            => true,
-        'text'               => '',
         'privacy_policy_url' => '',
-        'page_hook'          => true,
+        'viewer'             => [],
         'wp_enqueue_scripts' => true
     ];
 
@@ -55,21 +79,21 @@ class CookieLaw extends AbstractParametersBag
         });
 
         add_action('tify_page_hook_register', function ($pageHook) {
-            if (!$this->get('page_hook')) :
+            if (!$this->get('admin')) :
                 return;
             endif;
 
             /** @var PageHook $pageHook */
             $pageHook->register('page_for_privacy_policy', [
-                    'option_name'      => 'wp_page_for_privacy_policy',
-                    'title'            => __('Page d\'affichage de la politique de confidentialité', 'theme'),
-                    'desc'             => '',
-                    'object_type'      => 'post',
-                    'object_name'      => 'page',
-                    'id'               => get_option('wp_page_for_privacy_policy') ?: 0,
-                    'listorder'        => 'menu_order, title',
-                    'show_option_none' => '',
-                ]);
+                'option_name'      => 'wp_page_for_privacy_policy',
+                'title'            => __('Page d\'affichage de la politique de confidentialité', 'theme'),
+                'desc'             => '',
+                'object_type'      => 'post',
+                'object_name'      => 'page',
+                'id'               => get_option('wp_page_for_privacy_policy') ?: 0,
+                'listorder'        => 'menu_order, title',
+                'show_option_none' => '',
+            ]);
         });
 
         add_action('wp_enqueue_scripts', function () {
@@ -93,16 +117,18 @@ class CookieLaw extends AbstractParametersBag
      */
     public function __toString()
     {
-        return $this->display();
+        return $this->display()->render();
     }
 
     /**
      * Affichage.
      *
-     * @return string
+     * @return ViewInterface
      */
     public function display()
     {
+        $this->set('id', 'CookieLaw');
+
         if (!$this->get('privacy_policy_url')) :
             $privacy_policy = get_option('wp_page_for_privacy_policy', 0);
             $privacy_policy_url = $privacy_policy ? get_permalink($privacy_policy) : '';
@@ -128,7 +154,11 @@ class CookieLaw extends AbstractParametersBag
         if (!$this->viewer) :
             $cinfo = class_info($this);
             $default_dir = $cinfo->getDirname() . '/Resources/views';
-            $this->viewer = view()->setDirectory(is_dir($default_dir) ? $default_dir : null)->setOverrideDir((($override_dir = $this->get('viewer.override_dir')) && is_dir($override_dir)) ? $override_dir : (is_dir($default_dir) ? $default_dir : $cinfo->getDirname()));
+            $this->viewer = view()
+                ->setDirectory(is_dir($default_dir) ? $default_dir : null)
+                ->setOverrideDir((($override_dir = $this->get('viewer.override_dir')) && is_dir($override_dir))
+                    ? $override_dir
+                    : (is_dir($default_dir) ? $default_dir : $cinfo->getDirname()));
         endif;
 
         if (func_num_args() === 0) :
