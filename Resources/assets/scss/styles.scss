@@ -1,0 +1,65 @@
+.CookieLaw {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 100px;
+  text-align: center;
+  z-index: 1500;
+  background-color: #2B2B2B;
+  color: #FFF;
+}
+
+.CookieLaw[aria-hide="true"] {
+  display: none;
+}
+
+.CookieLaw-text {
+  margin-bottom: 10px;
+}
+
+.CookieLaw-button {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 0.6em 1.2em;
+
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.CookieLaw-button,
+.CookieLaw-button:visited {
+  color: #FFF;
+  border: solid 1px #FFF;
+}
+
+.CookieLaw-button:hover,
+.CookieLaw-button:active,
+.CookieLaw-button:focus {
+  color: #999;
+  border-color: #999;
+}
+
+.CookieLaw-close {
+  display: block;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-decoration: none;
+  color: #FFF;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.CookieLaw-close:hover,
+.CookieLaw-close:active,
+.CookieLaw-close:focus,
+.CookieLaw-close:visited {
+  color: #FFF;
+}
+
+.CookieLaw-close::before {
+  content: "\f158";
+  font: normal 16px/1 dashicons;
+  vertical-align: middle;
+}
