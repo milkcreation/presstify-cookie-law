@@ -20,12 +20,12 @@ return [
     'display'            => true,
 
     /**
-     * Url de la page de politique de confidentialité.
+     * Identifiant de qualification de la page de politique de confidentialité.
      * {@internal Utilise la page par défaut native de Wordpress}
      *
      * @var string
      */
-    'privacy_policy_url' => '',
+    'privacy_policy_page_id' => '',
 
     /**
      * Attributs de configuration du gestionnaire d'affichage de gabarits.
