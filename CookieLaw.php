@@ -6,7 +6,7 @@
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package presstify-plugins/cookie-law
  * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.0
+ * @version 2.0.1
  */
 
 namespace tiFy\Plugins\CookieLaw;
@@ -98,6 +98,7 @@ class CookieLaw extends AbstractParametersBag
 
         add_action('wp_enqueue_scripts', function () {
             if ($this->get('wp_enqueue_scripts')) :
+                partial('modal')->enqueue_scripts();
                 partial('cookie-notice')->enqueue_scripts();
                 wp_enqueue_style('CookieLaw');
             endif;
@@ -131,11 +132,8 @@ class CookieLaw extends AbstractParametersBag
     {
         $this->set('id', 'CookieLaw');
 
-        if (!$this->get('privacy_policy_url')) :
-            $privacy_policy = get_option('wp_page_for_privacy_policy', 0);
-            $privacy_policy_url = $privacy_policy ? get_permalink($privacy_policy) : '';
-
-            $this->set('privacy_policy_url', $privacy_policy_url);
+        if (!$this->get('privacy_policy_id')) :
+            $this->set('privacy_policy_id', get_option('wp_page_for_privacy_policy', 0));
         endif;
 
         return $this->viewer('cookie-law', $this->all());
