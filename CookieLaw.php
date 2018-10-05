@@ -6,7 +6,7 @@
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package presstify-plugins/cookie-law
  * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.1
+ * @version 2.0.2
  */
 
 namespace tiFy\Plugins\CookieLaw;
@@ -53,7 +53,7 @@ class CookieLaw extends AbstractParametersBag
     protected $attributes = [
         'admin'              => true,
         'display'            => true,
-        'privacy_policy_url' => '',
+        'privacy_policy_id'  => 0,
         'viewer'             => [],
         'wp_enqueue_scripts' => true
     ];
