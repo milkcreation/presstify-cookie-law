@@ -29,7 +29,7 @@ return [
 
     /**
      * Attributs de configuration du gestionnaire d'affichage de gabarits.
-     * @see \tiFy\Contracts\Views\ViewsInterface
+     * @see \tiFy\Contracts\View\ViewEngine
      *
      * @var array
      */
