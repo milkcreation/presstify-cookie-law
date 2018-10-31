@@ -6,14 +6,14 @@
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package presstify-plugins/cookie-law
  * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.2
+ * @version 2.0.3
  */
 
 namespace tiFy\Plugins\CookieLaw;
 
-use tiFy\Contracts\Views\ViewsInterface;
-use tiFy\Contracts\Views\ViewInterface;
-use tiFy\Kernel\Parameters\AbstractParametersBag;
+use tiFy\Contracts\View\ViewController;
+use tiFy\Contracts\View\ViewEngine;
+use tiFy\Kernel\Params\ParamsBag;
 use tiFy\PageHook\PageHook;
 
 /**
@@ -44,7 +44,7 @@ use tiFy\PageHook\PageHook;
  * Dans le dossier de config, créer le fichier admin-ui.php
  * @see /vendor/presstify-plugins/cookie-law/Resources/config/cookie-law.php Exemple de configuration
  */
-class CookieLaw extends AbstractParametersBag
+class CookieLaw extends ParamsBag
 {
     /**
      * Liste des attributs de configuration.
@@ -60,7 +60,7 @@ class CookieLaw extends AbstractParametersBag
 
     /**
      * Instance du moteur de gabarits d'affichage.
-     * @return ViewsInterface
+     * @return ViewEngine
      */
     protected $viewer;
 
@@ -126,7 +126,7 @@ class CookieLaw extends AbstractParametersBag
     /**
      * Affichage.
      *
-     * @return ViewInterface
+     * @return ViewController
      */
     public function display()
     {
@@ -147,7 +147,7 @@ class CookieLaw extends AbstractParametersBag
      * @param null|string view Nom de qualification du gabarit.
      * @param array $data Liste des variables passées en argument.
      *
-     * @return ViewsInterface|ViewInterface
+     * @return ViewController|ViewEngine
      */
     public function viewer($view = null, $data = [])
     {
