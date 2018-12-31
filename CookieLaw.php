@@ -6,7 +6,7 @@
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package presstify-plugins/cookie-law
  * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.3
+ * @version 2.0.4
  */
 
 namespace tiFy\Plugins\CookieLaw;
@@ -41,8 +41,8 @@ use tiFy\PageHook\PageHook;
  *
  * Configuration :
  * ----------------------------------------------------------------------------------------------------
- * Dans le dossier de config, créer le fichier admin-ui.php
- * @see /vendor/presstify-plugins/cookie-law/Resources/config/cookie-law.php Exemple de configuration
+ * Dans le dossier de config, créer le fichier cookie-law.php
+ * @see /vendor/presstify-plugins/cookie-law/Resources/config/cookie-law.php. Exemple de configuration.
  */
 class CookieLaw extends ParamsBag
 {
