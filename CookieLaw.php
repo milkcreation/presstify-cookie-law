@@ -6,7 +6,7 @@
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package presstify-plugins/cookie-law
  * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.4
+ * @version 2.0.5
  */
 
 namespace tiFy\Plugins\CookieLaw;
@@ -14,7 +14,6 @@ namespace tiFy\Plugins\CookieLaw;
 use tiFy\Contracts\View\ViewController;
 use tiFy\Contracts\View\ViewEngine;
 use tiFy\Kernel\Params\ParamsBag;
-use tiFy\PageHook\PageHook;
 
 /**
  * Class CookieLaw
@@ -78,22 +77,19 @@ class CookieLaw extends ParamsBag
                 ['dashicons'], 180921);
         });
 
-        add_action('tify_page_hook_register', function ($pageHook) {
-            if (!$this->get('admin')) :
-                return;
+        add_action('after_setup_theme', function () {
+            if ($this->get('admin') && app()->has('wp.page-hook')) :
+                app()->get('wp.page-hook')->set('page_for_privacy_policy', [
+                    'option_name'      => 'wp_page_for_privacy_policy',
+                    'title'            => __('Page d\'affichage de la politique de confidentialité', 'theme'),
+                    'desc'             => '',
+                    'object_type'      => 'post',
+                    'object_name'      => 'page',
+                    'id'               => get_option('wp_page_for_privacy_policy') ?: 0,
+                    'listorder'        => 'menu_order, title',
+                    'show_option_none' => '',
+                ]);
             endif;
-
-            /** @var PageHook $pageHook */
-            $pageHook->register('page_for_privacy_policy', [
-                'option_name'      => 'wp_page_for_privacy_policy',
-                'title'            => __('Page d\'affichage de la politique de confidentialité', 'theme'),
-                'desc'             => '',
-                'object_type'      => 'post',
-                'object_name'      => 'page',
-                'id'               => get_option('wp_page_for_privacy_policy') ?: 0,
-                'listorder'        => 'menu_order, title',
-                'show_option_none' => '',
-            ]);
         });
 
         add_action('wp_enqueue_scripts', function () {
@@ -105,22 +101,12 @@ class CookieLaw extends ParamsBag
         });
 
         add_action('wp_footer', function () {
-                if ($this->get('display')) :
-                    echo $this->display();
-                endif;
-            },
+            if ($this->get('display')) :
+                echo $this->display();
+            endif;
+        },
             999999
         );
-    }
-
-    /**
-     * Résolution de sortie de la classe en tant que chaîne de caractère.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->display()->render();
     }
 
     /**
@@ -132,7 +118,7 @@ class CookieLaw extends ParamsBag
     {
         $this->set('id', 'CookieLaw');
 
-        if (!$this->get('privacy_policy_id')) :
+        if ( ! $this->get('privacy_policy_id')) :
             $this->set('privacy_policy_id', get_option('wp_page_for_privacy_policy', 0));
         endif;
 
@@ -151,9 +137,9 @@ class CookieLaw extends ParamsBag
      */
     public function viewer($view = null, $data = [])
     {
-        if (!$this->viewer) :
-            $cinfo = class_info($this);
-            $default_dir = $cinfo->getDirname() . '/Resources/views';
+        if ( ! $this->viewer) :
+            $cinfo        = class_info($this);
+            $default_dir  = $cinfo->getDirname() . '/Resources/views';
             $this->viewer = view()
                 ->setDirectory(is_dir($default_dir) ? $default_dir : null)
                 ->setOverrideDir((($override_dir = $this->get('viewer.override_dir')) && is_dir($override_dir))
@@ -166,5 +152,15 @@ class CookieLaw extends ParamsBag
         endif;
 
         return $this->viewer->make("_override::{$view}", $data);
+    }
+
+    /**
+     * Résolution de sortie de la classe en tant que chaîne de caractère.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->display();
     }
 }
