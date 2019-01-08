@@ -6,209 +6,78 @@
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package presstiFy
  * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.0
+ * @version 0.0.0
  */
 
 namespace tiFy\Plugins\CookieLaw;
 
-use Illuminate\Support\Arr;
-use tiFy\Apps\AppController;
-use tiFy\Partial\Partial;
+use tiFy\App\Plugin;
+use tiFy\Core\Router\Router;
 
-class CookieLaw extends AppController
+class CookieLaw extends Plugin
 {
     /**
-     * Liste des attributs de configuration.
-     * @var array $attributes {
-     *      @var string|callable $content Texte du message de notification.
-     *      @var array $accept {
-     *          Liste des attributs de configuration du bouton de validation.
-     *      }
-     *      @var array $dismiss {
-     *          Liste des attributs de configuration du bouton de fermeture.
-     *      }
-     *      @var bool $display Activation de l'affichage sur toutes les pages du site.
-     *      @var bool $enqueue_scripts Activation de la mise en file automatique des scripts.
-     * }
+     * Classe de rappel du Router
+     * @var \tiFy\Core\Router\Factory
      */
-    protected $attributes = [
-        'attrs'           => [],
-        'content'         => '',
-        'accept'          => [],
-        'dismiss'         => false,
-        'cookie_name'     => 'tify_cookie_law',
-        'cookie_hash'     => true,
-        'cookie_expire'   => YEAR_IN_SECONDS,
-
-        'backdrop'        => true,
-
-        'theme'           => 'dark',
-
-        'policy'          => [
-            'modal'         => true
-        ],
-        'display'         => true,
-        'enqueue_scripts' => true
-    ];
+    private static $Router = null;
 
     /**
-     * Récupération de la liste des attributs de configuration.
-     *
-     * @return array
-     */
-    public function all()
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Initialisation du controleur.
+     * CONSTRUCTEUR
      *
      * @return void
      */
-    public function appBoot()
+    public function __construct()
     {
-        if (is_admin()) :
-            return;
-        endif;
+        parent::__construct();
 
-        $this->appAddAction('init');
-        $this->appAddAction('wp_loaded');
-        $this->appAddAction('wp_enqueue_scripts');
-        $this->appAddAction('wp_footer');
+        // Définition des événements de déclenchement
+        $this->tFyAppAddAction('init');
+        $this->tFyAppAddAction('tify_router_register');
+        $this->tFyAppAddAction('wp_enqueue_scripts');
+        $this->tFyAppAddAction('wp_footer');
     }
 
     /**
-     * Affichage.
-     *
-     * @return string
+     * DECLENCHEURS
      */
-    public function display()
-    {
-        return $this->appTemplateRender('cookie-law', $this->appConfig());
-    }
-
     /**
-     * Récupération d'un attribut de configuration.
-     *
-     * @param string $key Clé d'indexe de l'attribut. Syntaxe à point permise.
-     * @param mixed $default Valeur de retour par défaut.
-     *
-     * @return mixed
-     */
-    public function get($key, $default = null)
-    {
-        return Arr::get($this->attributes, $key, $default);
-    }
-
-    /**
-     * Vérification d'existance d'un attribut de configuration.
-     *
-     * @param string $key Clé d'indexe de l'attribut. Syntaxe à point permise.
-     *
-     * @return bool
-     */
-    public function has($key)
-    {
-        return Arr::has($this->attributes, $key);
-    }
-
-    /**
-     * Initialisation globale de Wordpress.
+     * Initialisation globale
      *
      * @return void
      */
     public function init()
     {
+        // Déclaration des scripts
         \wp_register_style(
-            'tiFyPluginCookieLaw',
-            $this->appUrl(get_class()) . '/assets/css/styles.css',
-            [],
-            180523
+            'tiFySet_CookieLaw',
+            self::tFyAppAssetsUrl('CookieLaw.css', get_class()),
+            ['dashicons'],
+            141118
         );
     }
 
     /**
-     * Traitement des attributs de configuration.
-     *
-     * @param array $attrs Liste des attributs de configuration personnalisés.
+     * Déclaration des attributs de routage de la page d'affichage des règles de cookie
      *
      * @return void
      */
-    protected function parse($attrs = [])
+    public function tify_router_register()
     {
-        $this->set(
-            'content',
-            '<div class="tiFyPluginCookieLaw-Text">' . $this->appTemplateRender('content') . '</div>'
-        );
-        $this->set(
-            'accept.attrs.class',
-            'tiFyPluginCookieLaw-Button'
-        );
-
-        $this->attributes = array_merge(
-            $this->attributes,
-            $this->appConfig()
-        );
-
-        if (!$this->has('accept.content')) :
-            $this->set('accept.content', __('Accepter', 'tify'));
+        if (!$attrs = self::tFyAppConfig('router')) :
+            return;
         endif;
 
-        $this->set('attrs.id', 'tiFyPluginCookieLaw');
-        $this->set('attrs.class', 'tiFyPluginCookieLaw tiFyPluginCookieLaw--' . $this->get('theme'));
-
-        $content = $this->get('content', '');
-        $this->set('content', is_callable($content) ? call_user_func($content) : $content);
-
-        if ($policy = $this->get('policy')) :
-            if (!is_array($policy)) :
-                $policy = [];
-            endif;
-
-            $this->set(
-                'policy',
-                (string) Partial::ModalTrigger(
-                    array_merge(
-                        [
-                            'attrs'   => [
-                                'class' => 'tiFyPluginCookieLaw-Button'
-                            ],
-                            'content' => __('En savoir plus', 'tify'),
-                            'modal'   => [
-                                'size'   => 'lg',
-
-                                'backdrop_close' => false,
-                                'header' => '<div class="modal-header"><h2>' .
-                                    __('Réglement Général sur la Protection des Données', 'tify') .
-                                    '</h2></div>',
-                                'body'   => '<div class="modal-body">' . $this->appTemplateRender('policy') . '</div>',
-                                'footer' => false
-                            ]
-                        ],
-                        $policy
-                    )
-                )
-            );
+        $defaults = [
+            'title' => __('Page d\'affichage des règles de cookie', 'tify')
+        ];
+        if (!is_array($attrs)) :
+            $attrs = [];
         endif;
 
-        $this->appSet('config', $this->all());
+        $attrs = \wp_parse_args($attrs, $defaults);
 
-    }
-
-    /**
-     * Définition d'un attribut de configuration.
-     *
-     * @param string $key Clé d'indexe de l'attribut. Syntaxe à point permise.
-     * @param mixed $value Valeur de l'attribut.
-     *
-     * @return $this
-     */
-    public function set($key, $value)
-    {
-        Arr::set($this->attributes, $key, $value);
-
-        return $this;
+        self::$Router = Router::register('_tiFySet_CookieLaw', $attrs);
     }
 
     /**
@@ -218,10 +87,8 @@ class CookieLaw extends AppController
      */
     public function wp_enqueue_scripts()
     {
-        if($this->appConfig('enqueue_scripts', true)) :
-            $this->appServiceGet(Partial::class)->enqueue('CookieNotice');
-            $this->appServiceGet(Partial::class)->enqueue('Modal');
-            \wp_enqueue_style('tiFyPluginCookieLaw');
+        if(self::tFyAppConfig('enqueue_scripts', true)) :
+            self::enqueue_scripts();
         endif;
     }
 
@@ -232,18 +99,85 @@ class CookieLaw extends AppController
      */
     public function wp_footer()
     {
-        if($this->appConfig('display', true)) :
-            echo $this->display();
+        if(self::tFyAppConfig('display', true)) :
+            self::display();
         endif;
     }
 
     /**
-     * A l'issue du chargement complet de Wordpress.
-     *
-     * @return void
+     * CONTROLEURS
      */
-    public function wp_loaded()
+    /**
+     * Affichage
+     *
+     * @param bool $echo Activation de l'affichage
+     *
+     * @return string
+     */
+    final public function display($echo = true)
     {
-        $this->parse();
+        // Définition des arguments du gabarit
+        $container_id = 'tiFySet-CookieLaw';
+        $text = self::tFyAppConfig('text');
+        if($rules_page_id = self::getRulesPageId()) :
+            $rules_url = \get_permalink($rules_page_id);
+        else :
+            $rules_url = '';
+        endif;
+        $valid_text = self::tFyAppConfig('valid_text');
+        $rules_text = self::tFyAppConfig('rules_text');
+        $close_text = self::tFyAppConfig('close_text');
+
+        // Récupération du gabarit
+        ob_start();
+        self::tFyAppGetTemplatePart(
+            'notice',
+            null,
+            compact(
+                'container_id',
+                'text',
+                'rules_url',
+                'valid_text',
+                'rules_text',
+                'close_text'
+            )
+        );
+        $text = ob_get_clean();
+
+        // Affichage de la notification
+        Control::CookieNotice(
+            [
+                'id'              => 'tiFySet-CookieLaw',
+                'container_id'    => $container_id,
+                'cookie_name'     => 'tiFySet_CookieLaw',
+                'cookie_hash'     => true,
+                'cookie_expire'   => YEAR_IN_SECONDS,
+                'text'            => $text,
+            ],
+            $echo
+        );
+    }
+
+    /**
+     * Mise en file des scripts
+     */
+    final public static function enqueue_scripts()
+    {
+        \wp_enqueue_style('tiFySet_CookieLaw');
+        Control::enqueue_scripts('cookie_notice');
+    }
+
+    /**
+     * Récupération de l'identifiant de qualification de la page d'affichage des règles de cookie
+     *
+     * @return int
+     */
+    final public static function getRulesPageId()
+    {
+        if (!$router = self::$Router) :
+            return 0;
+        endif;
+
+        return $router->getSelected();
     }
 }
