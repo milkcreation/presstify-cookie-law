@@ -1,14 +1,5 @@
 <?php
 
-/**
- * @name CookieLaw
- * @desc Extension PresstiFy de notification des règles cookie du site.
- * @author Jordy Manner <jordy@tigreblanc.fr>
- * @package presstify-plugins/cookie-law
- * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.5
- */
-
 namespace tiFy\Plugins\CookieLaw;
 
 use tiFy\Contracts\View\ViewController;
@@ -17,12 +8,16 @@ use tiFy\Kernel\Params\ParamsBag;
 
 /**
  * Class CookieLaw
- * @package tiFy\Plugins\CookieLaw
  *
- * Activation :
- * ----------------------------------------------------------------------------------------------------
- * Dans config/app.php ajouter \tiFy\Plugins\CookieLaw\CookieLaw à la liste des fournisseurs de services
- *     chargés automatiquement par l'application.
+ * @desc Extension PresstiFy d'affichage des règles de cookie.
+ * @author Jordy Manner <jordy@tigreblanc.fr>
+ * @package tiFy\Plugins\CookieLaw
+ * @version 2.0.6
+ *
+ * USAGE :
+ * Activation
+ * ---------------------------------------------------------------------------------------------------------------------
+ * Dans config/app.php ajouter \tiFy\Plugins\CookieLaw\CookieLaw à la liste des fournisseurs de services.
  * ex.
  * <?php
  * ...
@@ -38,10 +33,10 @@ use tiFy\Kernel\Params\ParamsBag;
  *      ]
  * ];
  *
- * Configuration :
- * ----------------------------------------------------------------------------------------------------
+ * Configuration
+ * ---------------------------------------------------------------------------------------------------------------------
  * Dans le dossier de config, créer le fichier cookie-law.php
- * @see /vendor/presstify-plugins/cookie-law/Resources/config/cookie-law.php. Exemple de configuration.
+ * @see /vendor/presstify-plugins/cookie-law/Resources/config/cookie-law.php
  */
 class CookieLaw extends ParamsBag
 {
@@ -54,7 +49,7 @@ class CookieLaw extends ParamsBag
         'display'            => true,
         'privacy_policy_id'  => 0,
         'viewer'             => [],
-        'wp_enqueue_scripts' => true
+        'wp_enqueue_scripts' => true,
     ];
 
     /**
@@ -110,6 +105,16 @@ class CookieLaw extends ParamsBag
     }
 
     /**
+     * Résolution de sortie de la classe en tant que chaîne de caractère.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->display();
+    }
+
+    /**
      * Affichage.
      *
      * @return ViewController
@@ -118,7 +123,7 @@ class CookieLaw extends ParamsBag
     {
         $this->set('id', 'CookieLaw');
 
-        if ( ! $this->get('privacy_policy_id')) :
+        if (!$this->get('privacy_policy_id')) :
             $this->set('privacy_policy_id', get_option('wp_page_for_privacy_policy', 0));
         endif;
 
@@ -137,9 +142,9 @@ class CookieLaw extends ParamsBag
      */
     public function viewer($view = null, $data = [])
     {
-        if ( ! $this->viewer) :
-            $cinfo        = class_info($this);
-            $default_dir  = $cinfo->getDirname() . '/Resources/views';
+        if (!$this->viewer) :
+            $cinfo = class_info($this);
+            $default_dir = $cinfo->getDirname() . '/Resources/views';
             $this->viewer = view()
                 ->setDirectory(is_dir($default_dir) ? $default_dir : null)
                 ->setOverrideDir((($override_dir = $this->get('viewer.override_dir')) && is_dir($override_dir))
@@ -152,15 +157,5 @@ class CookieLaw extends ParamsBag
         endif;
 
         return $this->viewer->make("_override::{$view}", $data);
-    }
-
-    /**
-     * Résolution de sortie de la classe en tant que chaîne de caractère.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string) $this->display();
     }
 }
