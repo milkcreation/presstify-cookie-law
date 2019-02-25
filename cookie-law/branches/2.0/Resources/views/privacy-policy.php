@@ -1,36 +1,28 @@
 <?php
 /**
  * @var tiFy\Contracts\View\ViewController $this
- * @var tiFy\Partial\Modal\Modal $modal.
+ * @var tiFy\Partial\Partials\Modal\Modal $modal .
  */
 ?>
-
-<?php if ($privacy_policy_id = $this->get('privacy_policy_id')) : ?>
-    <?php
-    $modal = partial(
-        'modal',
-        [
-            'options'   => ['show' => (request()->cookie('CookieLaw_' . COOKIEHASH) ? false : true)],
-            'header'    => $this->fetch('modal-header', compact('privacy_policy_id')),
-            'body'      => $this->fetch('modal-body', compact('privacy_policy_id')),
-            'footer'    => $this->fetch('modal-footer'),
-            'size'      => 'lg',
-            'backdrop_close' => false,
-            'in_footer' => false
-        ]
-    );
-
-    echo $modal->trigger(
-        [
-            'attrs'   => [
-                'class'  => 'CookieLaw-button CookieLaw-button--privacy_policy',
-                'href'   => get_permalink($privacy_policy_id),
-                'target' => '_blank'
-            ],
-            'content' => __('En savoir plus', 'theme')
-        ]
-    );
-
-    echo $modal;
-    ?>
-<?php endif; ?>
+<div class="CookieLaw-privacyPolicy">
+    <?php if ($privacy_policy_id = $this->get('privacy_policy_id')) : ?>
+        <?php
+        echo partial(
+            'modal',
+            'cookieLaw-privacyPolicy',
+            [
+                'attrs'          => [
+                    'id' => 'Modal-cookieLaw-privacyPolicy'
+                ],
+                'options'        => ['show' => false, 'backdrop' => false],
+                'header'         => $this->fetch('modal-header', $this->all()),
+                'body'           => $this->fetch('modal-body', $this->all()),
+                'footer'         => $this->fetch('modal-footer', $this->all()),
+                'size'           => 'lg',
+                'backdrop_close' => false,
+                'in_footer'      => false,
+            ]
+        );
+        ?>
+    <?php endif; ?>
+</div>

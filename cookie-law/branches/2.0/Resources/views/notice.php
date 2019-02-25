@@ -3,11 +3,14 @@
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
+<div class="CookieLaw-notice">
+    <?php $this->insert('notice-text', $this->all()); ?>
 
-<?php $this->insert('text', $this->all()); ?>
+    <?php $this->insert('notice-accept', $this->all()); ?>
 
-<?php $this->insert('accept', $this->all()); ?>
+    <?php $this->insert('notice-read', $this->all()); ?>
 
-<?php $this->insert('privacy-policy', $this->all()); ?>
+    <?php $this->insert('notice-close', $this->all()); ?>
+</div>
 
-<?php $this->insert('close', $this->all()); ?>
+<div class="CookieLaw-backdrop"></div>
