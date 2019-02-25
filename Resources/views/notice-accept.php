@@ -3,7 +3,6 @@
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
-
 <?php
 echo partial('tag', [
     'tag'     => 'a',
@@ -12,5 +11,5 @@ echo partial('tag', [
         'href'        => "#{$this->get('id')}",
         'aria-toggle' => 'accept'
     ],
-    'content' => __('Accepter', 'theme')
+    'content' => __('Accepter', 'tify')
 ]);

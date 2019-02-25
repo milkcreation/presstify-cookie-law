@@ -3,6 +3,7 @@
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
+<?php $this->insert('privacy-policy', $this->all()); ?>
 
 <?php
 echo partial(
@@ -11,12 +12,12 @@ echo partial(
         'accept'        => false,
         'attrs'         => [
             'id'    => $this->get('id'),
-            'class' => 'CookieLaw'
         ],
         'content'       => $this->fetch('notice', $this->all()),
         'cookie_name'   => 'CookieLaw',
         'cookie_expire' => YEAR_IN_SECONDS,
         'dismiss'       => false,
-        'type'          => 'info'
+        'type'          => 'info',
     ]
 );
+?>
