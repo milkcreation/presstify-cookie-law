@@ -1,5 +1,7 @@
 <?php
 /**
+ * Cookie Law - Notification | Fermeture.
+ * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
@@ -9,7 +11,7 @@ echo partial('tag', [
     'attrs'   => [
         'class'       => 'CookieLaw-close',
         'href'        => "#{$this->get('id')}",
-        'aria-toggle' => 'dismiss'
+        'data-toggle' => 'notice.dismiss'
     ],
     'content' => __('Fermer', 'tify')
 ]);

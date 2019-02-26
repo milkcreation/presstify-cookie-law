@@ -1,5 +1,7 @@
 <?php
 /**
+ * Cookie Law - Gabarit principal
+ * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>

@@ -1,5 +1,7 @@
 <?php
 /**
+ * Cookie Law - Notification | Validation.
+ * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
@@ -9,7 +11,7 @@ echo partial('tag', [
     'attrs'   => [
         'class'       => 'CookieLaw-button CookieLaw-button--accept',
         'href'        => "#{$this->get('id')}",
-        'aria-toggle' => 'accept'
+        'data-toggle' => 'notice.accept'
     ],
     'content' => __('Accepter', 'tify')
 ]);
