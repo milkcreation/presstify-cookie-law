@@ -1,7 +1,8 @@
 <?php
 /**
+ * Cookie Law - Politique de confidentialité.
+ * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Contracts\View\ViewController $this
- * @var tiFy\Partial\Partials\Modal\Modal $modal .
  */
 ?>
 <div class="CookieLaw-privacyPolicy">

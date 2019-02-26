@@ -1,9 +1,10 @@
 <?php
 /**
+ * Cookie Law - Notification | Texte.
+ * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
-
 <div class="CookieLaw-text">
     <?php
     _e(

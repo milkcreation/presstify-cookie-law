@@ -1,5 +1,7 @@
 <?php
 /**
+ * Cookie Law - Notification | Lecture de la politique de confidentialité.
+ * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
@@ -9,7 +11,7 @@
             'href'   => get_permalink($privacy_policy_id),
             'target' => '_blank',
         ],
-        'content' => __('Lire', 'tify'),
+        'content' => __('En savoir plus', 'tify'),
     ]);
     echo $modal;
 endif;

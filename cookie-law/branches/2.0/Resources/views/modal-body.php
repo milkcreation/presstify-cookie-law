@@ -1,9 +1,10 @@
 <?php
 /**
+ * Cookie Law - Modale | Corps.
+ * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Contracts\View\ViewController $this
  */
 ?>
-
 <?php $wp_query = new WP_Query(['page_id' => $this->get('privacy_policy_id')]); ?>
 
 <div class="modal-body">
