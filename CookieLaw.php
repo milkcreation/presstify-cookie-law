@@ -12,7 +12,7 @@ use tiFy\Kernel\Params\ParamsBag;
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.8
+ * @version 2.0.9
  *
  * USAGE :
  * Activation
@@ -45,7 +45,7 @@ class CookieLaw extends ParamsBag
      * @var array
      */
     protected $attributes = [
-        'admin'              => true,
+        'page-hook'          => true,
         'display'            => true,
         'privacy_policy_id'  => 0,
         'viewer'             => [],
@@ -73,17 +73,24 @@ class CookieLaw extends ParamsBag
         });
 
         add_action('after_setup_theme', function () {
-            if ($this->get('admin') && app()->has('wp.page-hook')) :
-                app()->get('wp.page-hook')->set('page_for_privacy_policy', [
-                    'option_name'      => 'wp_page_for_privacy_policy',
-                    'title'            => __('Page d\'affichage de la politique de confidentialité', 'theme'),
-                    'desc'             => '',
-                    'object_type'      => 'post',
-                    'object_name'      => 'page',
-                    'id'               => get_option('wp_page_for_privacy_policy') ?: 0,
-                    'listorder'        => 'menu_order, title',
-                    'show_option_none' => '',
-                ]);
+            if (($page_hook = $this->get('page-hook'))) :
+                $defaults = [
+                    'option_name'         => 'wp_page_for_privacy_policy',
+                    'title'               => __('Page d\'affichage de politique de confidentialité', 'tify'),
+                    'desc'                => '',
+                    'object_type'         => 'post',
+                    'object_name'         => 'page',
+                    'id'                  => get_option('wp_page_for_privacy_policy') ?: 0,
+                    'listorder'           => 'menu_order, title',
+                    'show_option_none'    => '',
+                    'display_post_states' => false,
+                    'edit_form_notice'    => __(
+                        'Vous éditez actuellement la page d\'affichage de politique de confidentialité.', 'tify'
+                    )
+                ];
+                $page_hook = is_array($page_hook) ? array_merge($defaults, $page_hook) : $defaults;
+
+                page_hook(['page_for_privacy_policy' => $page_hook]);
             endif;
         });
 
@@ -99,19 +106,7 @@ class CookieLaw extends ParamsBag
             if ($this->get('display')) :
                 echo $this->display();
             endif;
-        },
-            999999
-        );
-    }
-
-    /**
-     * Résolution de sortie de la classe en tant que chaîne de caractère.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string)$this->display();
+        }, 999999);
     }
 
     /**
@@ -157,5 +152,15 @@ class CookieLaw extends ParamsBag
         endif;
 
         return $this->viewer->make("_override::{$view}", $data);
+    }
+
+    /**
+     * Résolution de sortie de la classe en tant que chaîne de caractère.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->display();
     }
 }
