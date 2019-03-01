@@ -6,11 +6,12 @@
 
 return [
     /**
-     * Activation de l'administrabilité de la page de politique de confidentialité.
+     * Activation de l'administrabilité de la page d'accroche de la politique de confidentialité ou Attributs de
+     * configuration de la page d'accroche de la politique.
      *
-     * @var boolean
+     * @var boolean|array
      */
-    'admin'              => true,
+    'page-hook'              => true,
 
     /**
      * Chargement automatique de l'affichage.
