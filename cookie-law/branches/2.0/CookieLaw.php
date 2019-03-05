@@ -2,9 +2,11 @@
 
 namespace tiFy\Plugins\CookieLaw;
 
+use tiFy\Contracts\Partial\Modal;
 use tiFy\Contracts\View\ViewController;
 use tiFy\Contracts\View\ViewEngine;
 use tiFy\Kernel\Params\ParamsBag;
+use tiFy\Wp\Query\QueryPost;
 
 /**
  * Class CookieLaw
@@ -12,7 +14,7 @@ use tiFy\Kernel\Params\ParamsBag;
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.9
+ * @version 2.0.10
  *
  * USAGE :
  * Activation
@@ -45,12 +47,25 @@ class CookieLaw extends ParamsBag
      * @var array
      */
     protected $attributes = [
-        'page-hook'          => true,
         'display'            => true,
+        'modal'              => true,
+        'page-hook'          => true,
         'privacy_policy_id'  => 0,
         'viewer'             => [],
         'wp_enqueue_scripts' => true,
     ];
+
+    /**
+     * Instance de la fenêtre modal d'affichage de la politique de confidentialité.
+     * @var null|false|Modal
+     */
+    protected $modal;
+
+    /**
+     * Instance du post de politique de confidentialité du site.
+     * @var null|false|QueryPost
+     */
+    protected $privacy_policy;
 
     /**
      * Instance du moteur de gabarits d'affichage.
@@ -68,8 +83,11 @@ class CookieLaw extends ParamsBag
         parent::__construct(config('cookie-law', $this->attributes));
 
         add_action('init', function () {
-            wp_register_style('CookieLaw', class_info($this)->getUrl() . '/Resources/assets/css/styles.css',
-                ['dashicons'], 180921);
+            wp_register_style(
+                'CookieLaw', class_info($this)->getUrl() . '/Resources/assets/css/styles.css',
+                ['dashicons'],
+                180921
+            );
         });
 
         add_action('after_setup_theme', function () {
@@ -110,19 +128,82 @@ class CookieLaw extends ParamsBag
     }
 
     /**
+     * Résolution de sortie de la classe en tant que chaîne de caractère.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->display();
+    }
+
+    /**
      * Affichage.
      *
      * @return ViewController
      */
     public function display()
     {
+        return $this->viewer('cookie-law', $this->all());
+    }
+
+    /**
+     * Récupération de la modal d'affichage de la politique de confidentialité.
+     *
+     * @return Modal
+     */
+    public function modal()
+    {
+        if (is_null($this->modal)) :
+            if ($modal = $this->get('modal')) :
+                $attrs = array_merge([
+                    'attrs'          => [
+                        'id' => 'Modal-cookieLaw-privacyPolicy'
+                    ],
+                    'options'        => ['show' => false, 'backdrop' => false],
+                    'header'         => (string) $this->viewer('modal-header', $this->all()),
+                    'body'           => (string) $this->viewer('modal-body', $this->all()),
+                    'footer'         => (string) $this->viewer('modal-footer', $this->all()),
+                    'size'           => 'lg',
+                    'backdrop_close' => false,
+                    'in_footer'      => false,
+                ], is_array($modal) ? $modal : []);
+
+                $this->modal =  partial('modal', 'cookieLaw-privacyPolicy', $attrs);
+            else :
+                $this->modal = false;
+            endif;
+        endif;
+
+        return $this->modal;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function parse($attrs = [])
+    {
+        parent::parse($attrs);
+
         $this->set('id', 'CookieLaw');
 
         if (!$this->get('privacy_policy_id')) :
             $this->set('privacy_policy_id', get_option('wp_page_for_privacy_policy', 0));
         endif;
+    }
 
-        return $this->viewer('cookie-law', $this->all());
+    /**
+     * Récupération de l'instance du post de politique de confidentialité du site.
+     *
+     * @return false|QueryPost
+     */
+    public function privacyPolicy()
+    {
+        if (is_null($this->privacy_policy)) :
+            $this->privacy_policy = ($post = QueryPost::createFromId($this->get('privacy_policy_id'))) ? $post : false;
+        endif;
+
+        return $this->privacy_policy;
     }
 
     /**
@@ -142,9 +223,11 @@ class CookieLaw extends ParamsBag
             $default_dir = $cinfo->getDirname() . '/Resources/views';
             $this->viewer = view()
                 ->setDirectory(is_dir($default_dir) ? $default_dir : null)
+                ->setController(CookieLawView::class)
                 ->setOverrideDir((($override_dir = $this->get('viewer.override_dir')) && is_dir($override_dir))
                     ? $override_dir
-                    : (is_dir($default_dir) ? $default_dir : $cinfo->getDirname()));
+                    : (is_dir($default_dir) ? $default_dir : $cinfo->getDirname()))
+                ->set('cookie-law', $this);
         endif;
 
         if (func_num_args() === 0) :
@@ -152,15 +235,5 @@ class CookieLaw extends ParamsBag
         endif;
 
         return $this->viewer->make("_override::{$view}", $data);
-    }
-
-    /**
-     * Résolution de sortie de la classe en tant que chaîne de caractère.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string)$this->display();
     }
 }

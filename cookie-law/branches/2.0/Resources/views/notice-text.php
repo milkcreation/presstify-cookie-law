@@ -2,7 +2,8 @@
 /**
  * Cookie Law - Notification | Texte.
  * ---------------------------------------------------------------------------------------------------------------------
- * @var tiFy\Contracts\View\ViewController $this
+ *
+ * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>
 <div class="CookieLaw-text">

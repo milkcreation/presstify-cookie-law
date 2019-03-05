@@ -2,7 +2,8 @@
 /**
  * Cookie Law - Notification | Fermeture.
  * ---------------------------------------------------------------------------------------------------------------------
- * @var tiFy\Contracts\View\ViewController $this
+ *
+ * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>
 <?php

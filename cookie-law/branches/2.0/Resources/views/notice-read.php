@@ -2,16 +2,22 @@
 /**
  * Cookie Law - Notification | Lecture de la politique de confidentialité.
  * ---------------------------------------------------------------------------------------------------------------------
- * @var tiFy\Contracts\View\ViewController $this
+ *
+ * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>
-<?php if ($privacy_policy_id = $this->get('privacy_policy_id')) :
-    $modal = partial('modal', 'cookieLaw-privacyPolicy')->trigger([
-        'attrs'   => [
-            'href'   => get_permalink($privacy_policy_id),
-            'target' => '_blank',
-        ],
-        'content' => __('En savoir plus', 'tify'),
-    ]);
-    echo $modal;
+<?php
+if ($policy = $this->privacyPolicy()) :
+    if ($this->modal()) :
+        echo $this->modal()->trigger(['content' => __('En savoir plus', 'tify')]);
+    else :
+        echo partial('tag', [
+            'tag'     => 'a',
+            'attrs'   => [
+                'href'   => $policy->getPermalink(),
+                'target' => '_blank'
+            ],
+            'content' => __('En savoir plus', 'tify')
+        ]);
+    endif;
 endif;
