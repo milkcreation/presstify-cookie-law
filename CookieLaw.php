@@ -1,249 +1,239 @@
 <?php
 
-/**
- * @name CookieLaw
- * @desc Extension PresstiFy de notification des règles cookie du site.
- * @author Jordy Manner <jordy@tigreblanc.fr>
- * @package presstiFy
- * @namespace tiFy\Plugins\CookieLaw
- * @version 2.0.0
- */
-
 namespace tiFy\Plugins\CookieLaw;
 
-use Illuminate\Support\Arr;
-use tiFy\Apps\AppController;
-use tiFy\Partial\Partial;
+use tiFy\Contracts\Partial\Modal;
+use tiFy\Contracts\View\ViewController;
+use tiFy\Contracts\View\ViewEngine;
+use tiFy\Kernel\Params\ParamsBag;
+use tiFy\Wp\Query\QueryPost;
 
-class CookieLaw extends AppController
+/**
+ * Class CookieLaw
+ *
+ * @desc Extension PresstiFy d'affichage des règles de cookie.
+ * @author Jordy Manner <jordy@tigreblanc.fr>
+ * @package tiFy\Plugins\CookieLaw
+ * @version 2.0.10
+ *
+ * USAGE :
+ * Activation
+ * ---------------------------------------------------------------------------------------------------------------------
+ * Dans config/app.php ajouter \tiFy\Plugins\CookieLaw\CookieLaw à la liste des fournisseurs de services.
+ * ex.
+ * <?php
+ * ...
+ * use tiFy\Plugins\CookieLaw\CookieLaw;
+ * ...
+ *
+ * return [
+ *      ...
+ *      'providers' => [
+ *          ...
+ *          CookieLaw::class
+ *          ...
+ *      ]
+ * ];
+ *
+ * Configuration
+ * ---------------------------------------------------------------------------------------------------------------------
+ * Dans le dossier de config, créer le fichier cookie-law.php
+ * @see /vendor/presstify-plugins/cookie-law/Resources/config/cookie-law.php
+ */
+class CookieLaw extends ParamsBag
 {
     /**
      * Liste des attributs de configuration.
-     * @var array $attributes {
-     *      @var string|callable $content Texte du message de notification.
-     *      @var array $accept {
-     *          Liste des attributs de configuration du bouton de validation.
-     *      }
-     *      @var array $dismiss {
-     *          Liste des attributs de configuration du bouton de fermeture.
-     *      }
-     *      @var bool $display Activation de l'affichage sur toutes les pages du site.
-     *      @var bool $enqueue_scripts Activation de la mise en file automatique des scripts.
-     * }
+     * @var array
      */
     protected $attributes = [
-        'attrs'           => [],
-        'content'         => '',
-        'accept'          => [],
-        'dismiss'         => false,
-        'cookie_name'     => 'tify_cookie_law',
-        'cookie_hash'     => true,
-        'cookie_expire'   => YEAR_IN_SECONDS,
-
-        'backdrop'        => true,
-
-        'theme'           => 'dark',
-
-        'policy'          => [
-            'modal'         => true
-        ],
-        'display'         => true,
-        'enqueue_scripts' => true
+        'display'            => true,
+        'modal'              => true,
+        'page-hook'          => true,
+        'privacy_policy_id'  => 0,
+        'viewer'             => [],
+        'wp_enqueue_scripts' => true,
     ];
 
     /**
-     * Récupération de la liste des attributs de configuration.
-     *
-     * @return array
+     * Instance de la fenêtre modal d'affichage de la politique de confidentialité.
+     * @var null|false|Modal
      */
-    public function all()
-    {
-        return $this->attributes;
-    }
+    protected $modal;
 
     /**
-     * Initialisation du controleur.
+     * Instance du post de politique de confidentialité du site.
+     * @var null|false|QueryPost
+     */
+    protected $privacy_policy;
+
+    /**
+     * Instance du moteur de gabarits d'affichage.
+     * @return ViewEngine
+     */
+    protected $viewer;
+
+    /**
+     * CONSTRUCTEUR.
      *
      * @return void
      */
-    public function appBoot()
+    public function __construct()
     {
-        if (is_admin()) :
-            return;
-        endif;
+        parent::__construct(config('cookie-law', $this->attributes));
 
-        $this->appAddAction('init');
-        $this->appAddAction('wp_loaded');
-        $this->appAddAction('wp_enqueue_scripts');
-        $this->appAddAction('wp_footer');
+        add_action('init', function () {
+            wp_register_style(
+                'CookieLaw', class_info($this)->getUrl() . '/Resources/assets/css/styles.css',
+                ['dashicons'],
+                180921
+            );
+        });
+
+        add_action('after_setup_theme', function () {
+            if (($page_hook = $this->get('page-hook'))) :
+                $defaults = [
+                    'option_name'         => 'wp_page_for_privacy_policy',
+                    'title'               => __('Page d\'affichage de politique de confidentialité', 'tify'),
+                    'desc'                => '',
+                    'object_type'         => 'post',
+                    'object_name'         => 'page',
+                    'id'                  => get_option('wp_page_for_privacy_policy') ?: 0,
+                    'listorder'           => 'menu_order, title',
+                    'show_option_none'    => '',
+                    'display_post_states' => false,
+                    'edit_form_notice'    => __(
+                        'Vous éditez actuellement la page d\'affichage de politique de confidentialité.', 'tify'
+                    )
+                ];
+                $page_hook = is_array($page_hook) ? array_merge($defaults, $page_hook) : $defaults;
+
+                page_hook(['page_for_privacy_policy' => $page_hook]);
+            endif;
+        });
+
+        add_action('wp_enqueue_scripts', function () {
+            if ($this->get('wp_enqueue_scripts')) :
+                partial('modal')->enqueue_scripts();
+                partial('cookie-notice')->enqueue_scripts();
+                wp_enqueue_style('CookieLaw');
+            endif;
+        });
+
+        add_action('wp_footer', function () {
+            if ($this->get('display')) :
+                echo $this->display();
+            endif;
+        }, 999999);
+    }
+
+    /**
+     * Résolution de sortie de la classe en tant que chaîne de caractère.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->display();
     }
 
     /**
      * Affichage.
      *
-     * @return string
+     * @return ViewController
      */
     public function display()
     {
-        return $this->appTemplateRender('cookie-law', $this->appConfig());
+        return $this->viewer('cookie-law', $this->all());
     }
 
     /**
-     * Récupération d'un attribut de configuration.
+     * Récupération de la modal d'affichage de la politique de confidentialité.
      *
-     * @param string $key Clé d'indexe de l'attribut. Syntaxe à point permise.
-     * @param mixed $default Valeur de retour par défaut.
-     *
-     * @return mixed
+     * @return Modal
      */
-    public function get($key, $default = null)
+    public function modal()
     {
-        return Arr::get($this->attributes, $key, $default);
-    }
+        if (is_null($this->modal)) :
+            if ($modal = $this->get('modal')) :
+                $attrs = array_merge([
+                    'attrs'          => [
+                        'id' => 'Modal-cookieLaw-privacyPolicy'
+                    ],
+                    'options'        => ['show' => false, 'backdrop' => false],
+                    'header'         => (string) $this->viewer('modal-header', $this->all()),
+                    'body'           => (string) $this->viewer('modal-body', $this->all()),
+                    'footer'         => (string) $this->viewer('modal-footer', $this->all()),
+                    'size'           => 'lg',
+                    'backdrop_close' => false,
+                    'in_footer'      => false,
+                ], is_array($modal) ? $modal : []);
 
-    /**
-     * Vérification d'existance d'un attribut de configuration.
-     *
-     * @param string $key Clé d'indexe de l'attribut. Syntaxe à point permise.
-     *
-     * @return bool
-     */
-    public function has($key)
-    {
-        return Arr::has($this->attributes, $key);
-    }
-
-    /**
-     * Initialisation globale de Wordpress.
-     *
-     * @return void
-     */
-    public function init()
-    {
-        \wp_register_style(
-            'tiFyPluginCookieLaw',
-            $this->appUrl(get_class()) . '/assets/css/styles.css',
-            [],
-            180523
-        );
-    }
-
-    /**
-     * Traitement des attributs de configuration.
-     *
-     * @param array $attrs Liste des attributs de configuration personnalisés.
-     *
-     * @return void
-     */
-    protected function parse($attrs = [])
-    {
-        $this->set(
-            'content',
-            '<div class="tiFyPluginCookieLaw-Text">' . $this->appTemplateRender('content') . '</div>'
-        );
-        $this->set(
-            'accept.attrs.class',
-            'tiFyPluginCookieLaw-Button'
-        );
-
-        $this->attributes = array_merge(
-            $this->attributes,
-            $this->appConfig()
-        );
-
-        if (!$this->has('accept.content')) :
-            $this->set('accept.content', __('Accepter', 'tify'));
-        endif;
-
-        $this->set('attrs.id', 'tiFyPluginCookieLaw');
-        $this->set('attrs.class', 'tiFyPluginCookieLaw tiFyPluginCookieLaw--' . $this->get('theme'));
-
-        $content = $this->get('content', '');
-        $this->set('content', is_callable($content) ? call_user_func($content) : $content);
-
-        if ($policy = $this->get('policy')) :
-            if (!is_array($policy)) :
-                $policy = [];
+                $this->modal =  partial('modal', 'cookieLaw-privacyPolicy', $attrs);
+            else :
+                $this->modal = false;
             endif;
-
-            $this->set(
-                'policy',
-                (string) Partial::ModalTrigger(
-                    array_merge(
-                        [
-                            'attrs'   => [
-                                'class' => 'tiFyPluginCookieLaw-Button'
-                            ],
-                            'content' => __('En savoir plus', 'tify'),
-                            'modal'   => [
-                                'size'   => 'lg',
-
-                                'backdrop_close' => false,
-                                'header' => '<div class="modal-header"><h2>' .
-                                    __('Réglement Général sur la Protection des Données', 'tify') .
-                                    '</h2></div>',
-                                'body'   => '<div class="modal-body">' . $this->appTemplateRender('policy') . '</div>',
-                                'footer' => false
-                            ]
-                        ],
-                        $policy
-                    )
-                )
-            );
         endif;
 
-        $this->appSet('config', $this->all());
-
+        return $this->modal;
     }
 
     /**
-     * Définition d'un attribut de configuration.
-     *
-     * @param string $key Clé d'indexe de l'attribut. Syntaxe à point permise.
-     * @param mixed $value Valeur de l'attribut.
-     *
-     * @return $this
+     * @inheritdoc
      */
-    public function set($key, $value)
+    public function parse($attrs = [])
     {
-        Arr::set($this->attributes, $key, $value);
+        parent::parse($attrs);
 
-        return $this;
-    }
+        $this->set('id', 'CookieLaw');
 
-    /**
-     * Initialisation des scripts de l'interface utilisateur
-     *
-     * @return void
-     */
-    public function wp_enqueue_scripts()
-    {
-        if($this->appConfig('enqueue_scripts', true)) :
-            $this->appServiceGet(Partial::class)->enqueue('CookieNotice');
-            $this->appServiceGet(Partial::class)->enqueue('Modal');
-            \wp_enqueue_style('tiFyPluginCookieLaw');
+        if (!$this->get('privacy_policy_id')) :
+            $this->set('privacy_policy_id', get_option('wp_page_for_privacy_policy', 0));
         endif;
     }
 
     /**
-     * Pied de page de l'interface utilisateur du site
+     * Récupération de l'instance du post de politique de confidentialité du site.
      *
-     * @return string
+     * @return false|QueryPost
      */
-    public function wp_footer()
+    public function privacyPolicy()
     {
-        if($this->appConfig('display', true)) :
-            echo $this->display();
+        if (is_null($this->privacy_policy)) :
+            $this->privacy_policy = ($post = QueryPost::createFromId($this->get('privacy_policy_id'))) ? $post : false;
         endif;
+
+        return $this->privacy_policy;
     }
 
     /**
-     * A l'issue du chargement complet de Wordpress.
+     * Récupération d'un instance du controleur de liste des gabarits d'affichage ou d'un gabarit d'affichage.
+     * {@internal Si aucun argument n'est passé à la méthode, retourne l'instance du controleur de liste.}
+     * {@internal Sinon récupére l'instance du gabarit d'affichage et passe les variables en argument.}
      *
-     * @return void
+     * @param null|string view Nom de qualification du gabarit.
+     * @param array $data Liste des variables passées en argument.
+     *
+     * @return ViewController|ViewEngine
      */
-    public function wp_loaded()
+    public function viewer($view = null, $data = [])
     {
-        $this->parse();
+        if (!$this->viewer) :
+            $cinfo = class_info($this);
+            $default_dir = $cinfo->getDirname() . '/Resources/views';
+            $this->viewer = view()
+                ->setDirectory(is_dir($default_dir) ? $default_dir : null)
+                ->setController(CookieLawView::class)
+                ->setOverrideDir((($override_dir = $this->get('viewer.override_dir')) && is_dir($override_dir))
+                    ? $override_dir
+                    : (is_dir($default_dir) ? $default_dir : $cinfo->getDirname()))
+                ->set('cookie-law', $this);
+        endif;
+
+        if (func_num_args() === 0) :
+            return $this->viewer;
+        endif;
+
+        return $this->viewer->make("_override::{$view}", $data);
     }
 }
