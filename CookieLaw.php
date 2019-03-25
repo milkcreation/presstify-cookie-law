@@ -5,8 +5,8 @@ namespace tiFy\Plugins\CookieLaw;
 use tiFy\Contracts\Partial\Modal;
 use tiFy\Contracts\View\ViewController;
 use tiFy\Contracts\View\ViewEngine;
-use tiFy\Kernel\Params\ParamsBag;
-use tiFy\Wp\Query\QueryPost;
+use tiFy\Support\ParamsBag;
+use tiFy\Wordpress\Query\QueryPost;
 
 /**
  * Class CookieLaw
@@ -14,7 +14,7 @@ use tiFy\Wp\Query\QueryPost;
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.10
+ * @version 2.0.11
  *
  * USAGE :
  * Activation
@@ -43,19 +43,6 @@ use tiFy\Wp\Query\QueryPost;
 class CookieLaw extends ParamsBag
 {
     /**
-     * Liste des attributs de configuration.
-     * @var array
-     */
-    protected $attributes = [
-        'display'            => true,
-        'modal'              => true,
-        'page-hook'          => true,
-        'privacy_policy_id'  => 0,
-        'viewer'             => [],
-        'wp_enqueue_scripts' => true,
-    ];
-
-    /**
      * Instance de la fenêtre modal d'affichage de la politique de confidentialité.
      * @var null|false|Modal
      */
@@ -80,7 +67,7 @@ class CookieLaw extends ParamsBag
      */
     public function __construct()
     {
-        parent::__construct(config('cookie-law', $this->attributes));
+        $this->set(config('cookie-law', $this->attributes))->parse();
 
         add_action('init', function () {
             wp_register_style(
@@ -138,6 +125,21 @@ class CookieLaw extends ParamsBag
     }
 
     /**
+     * @inheritdoc
+     */
+    public function defaults()
+    {
+        return [
+            'display'            => true,
+            'modal'              => true,
+            'page-hook'          => true,
+            'privacy_policy_id'  => 0,
+            'viewer'             => [],
+            'wp_enqueue_scripts' => true,
+        ];
+    }
+
+    /**
      * Affichage.
      *
      * @return ViewController
@@ -181,9 +183,9 @@ class CookieLaw extends ParamsBag
     /**
      * @inheritdoc
      */
-    public function parse($attrs = [])
+    public function parse()
     {
-        parent::parse($attrs);
+        parent::parse();
 
         $this->set('id', 'CookieLaw');
 
