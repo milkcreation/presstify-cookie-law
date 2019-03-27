@@ -1,0 +1,54 @@
+{
+  "name": "presstify-plugins/cookie-law",
+  "description": "Extension PresstiFy d'affichage des règles de cookie.",
+  "type": "presstify-plugin",
+  "keywords": [
+    "presstify",
+    "plugins",
+    "wordpress",
+    "cookie",
+    "rgpd",
+    "gprd"
+  ],
+  "homepage": "https://svn.tigreblanc.fr/presstify-plugins/cookie-law",
+  "time": "2019-03-27",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Jordy Manner",
+      "email": "jordy.manner@milkcreation.fr",
+      "role": "Developper"
+    },
+    {
+      "name": "Louis Dherent",
+      "email": "louis@tigreblanc.fr",
+      "role": "Developper"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "http://composer.tigreblanc.fr/presstify/"
+    }
+  ],
+  "require": {
+    "composer/installers": "~1.0",
+    "presstify/framework": "2.0.*"
+  },
+  "autoload": {
+    "files": [
+      "helpers.php"
+    ],
+    "psr-4": {
+      "tiFy\\Plugins\\CookieLaw\\": ""
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,  
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "secure-http": false,
+    "sort-packages": true
+  }
+}
