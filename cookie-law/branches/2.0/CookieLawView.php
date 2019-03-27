@@ -3,7 +3,7 @@
 namespace tiFy\Plugins\CookieLaw;
 
 use tiFy\Contracts\Partial\Modal;
-use tiFy\Contracts\Wp\QueryPost;
+use tiFy\Wordpress\Contracts\QueryPost;
 use tiFy\View\ViewController;
 
 /**

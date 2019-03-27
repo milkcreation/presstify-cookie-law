@@ -6,8 +6,8 @@
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>
-<?php if ($this->privacyPolicy() && $this->modal()) : ?>
+<?php if ($this->privacyPolicy() && ($modal = $this->modal())) : ?>
     <div class="CookieLaw-privacyPolicy">
-        <?php echo $this->modal(); ?>
+        <?php echo $modal; ?>
     </div>
 <?php endif;

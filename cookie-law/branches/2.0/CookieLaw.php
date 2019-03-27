@@ -14,7 +14,7 @@ use tiFy\Wordpress\Query\QueryPost;
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.11
+ * @version 2.0.12
  *
  * USAGE :
  * Activation
@@ -171,7 +171,7 @@ class CookieLaw extends ParamsBag
                     'in_footer'      => false,
                 ], is_array($modal) ? $modal : []);
 
-                $this->modal =  partial('modal', 'cookieLaw-privacyPolicy', $attrs);
+                $this->modal = partial('modal', 'cookieLaw-privacyPolicy', $attrs);
             else :
                 $this->modal = false;
             endif;
