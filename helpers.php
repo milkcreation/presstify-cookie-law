@@ -2,20 +2,17 @@
 
 use tiFy\Plugins\CookieLaw\CookieLaw;
 
-if (!function_exists('cookie_law')) :
+if (!function_exists('cookie_law')) {
     /**
      * Récupération de l'instance.
      *
      * {@internal  Permet l'affichage de la bannière de régles de cookie si appelé en tant que string ou au travers
      * d'un echo.}
      *
-     * @return CookieLaw
+     * @return CookieLaw|null
      */
-    function cookie_law()
+    function cookie_law(): ?CookieLaw
     {
-        /** @var CookieLaw $manager */
-        $manager = app(CookieLaw::class);
-
-        return $manager;
+        return app(CookieLaw::class);
     }
-endif;
+}
