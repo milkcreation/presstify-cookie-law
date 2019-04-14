@@ -2,6 +2,8 @@
 
 namespace tiFy\Plugins\CookieLaw;
 
+use BadMethodCallException;
+use Exception;
 use tiFy\Contracts\Partial\Modal;
 use tiFy\Wordpress\Contracts\QueryPost;
 use tiFy\View\ViewController;
@@ -31,8 +33,8 @@ class CookieLawView extends ViewController
         'content',
         'getId',
         'getIndex',
-        'privacyPolicy',
-        'modal'
+        'modal',
+        'privacyPolicy'
     ];
 
     /**
@@ -42,18 +44,18 @@ class CookieLawView extends ViewController
      * @param array $arguments Liste des variables passées en argument.
      *
      * @return mixed
+     *
+     * @throws BadMethodCallException
      */
     public function __call($name, $arguments)
     {
-        if (in_array($name, $this->mixins)) :
-            return call_user_func_array(
-                [$this->engine->get('cookie-law'), $name],
-                $arguments
-            );
-        elseif (method_exists($this, $name)) :
-            return call_user_func_array([$this, $name], $arguments);
-        endif;
-
-        return null;
+        if (in_array($name, $this->mixins)) {
+            try {
+                return $this->engine->get('cookie-law')->$name(...$arguments);
+            } catch (Exception $e) {
+                throw new BadMethodCallException(sprintf(__('La méthode %s n\'est pas disponible.', 'tify'), $name));
+            }
+        }
+        throw new BadMethodCallException(sprintf(__('La méthode %s n\'est pas disponible.', 'tify'), $name));
     }
 }

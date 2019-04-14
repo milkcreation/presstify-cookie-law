@@ -14,7 +14,7 @@ use tiFy\Wordpress\Query\QueryPost;
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.12
+ * @version 2.0.13
  *
  * USAGE :
  * Activation
@@ -67,7 +67,7 @@ class CookieLaw extends ParamsBag
      */
     public function __construct()
     {
-        $this->set(config('cookie-law', $this->attributes))->parse();
+        $this->set(config('cookie-law', []))->parse();
 
         add_action('init', function () {
             wp_register_style(
@@ -78,7 +78,7 @@ class CookieLaw extends ParamsBag
         });
 
         add_action('after_setup_theme', function () {
-            if (($page_hook = $this->get('page-hook'))) :
+            if (($page_hook = $this->get('page-hook'))) {
                 $defaults = [
                     'option_name'         => 'wp_page_for_privacy_policy',
                     'title'               => __('Page d\'affichage de politique de confidentialité', 'tify'),
@@ -96,21 +96,21 @@ class CookieLaw extends ParamsBag
                 $page_hook = is_array($page_hook) ? array_merge($defaults, $page_hook) : $defaults;
 
                 page_hook(['page_for_privacy_policy' => $page_hook]);
-            endif;
+            }
         });
 
         add_action('wp_enqueue_scripts', function () {
-            if ($this->get('wp_enqueue_scripts')) :
+            if ($this->get('wp_enqueue_scripts')) {
                 partial('modal')->enqueue_scripts();
                 partial('cookie-notice')->enqueue_scripts();
                 wp_enqueue_style('CookieLaw');
-            endif;
+            }
         });
 
         add_action('wp_footer', function () {
-            if ($this->get('display')) :
+            if ($this->get('display')) {
                 echo $this->display();
-            endif;
+            }
         }, 999999);
     }
 
@@ -156,27 +156,26 @@ class CookieLaw extends ParamsBag
      */
     public function modal()
     {
-        if (is_null($this->modal)) :
-            if ($modal = $this->get('modal')) :
+        if (is_null($this->modal)) {
+            if ($modal = $this->get('modal')) {
                 $attrs = array_merge([
                     'attrs'          => [
                         'id' => 'Modal-cookieLaw-privacyPolicy'
                     ],
                     'options'        => ['show' => false, 'backdrop' => false],
-                    'header'         => (string) $this->viewer('modal-header', $this->all()),
-                    'body'           => (string) $this->viewer('modal-body', $this->all()),
-                    'footer'         => (string) $this->viewer('modal-footer', $this->all()),
+                    'header'         => (string)$this->viewer('modal-header', $this->all()),
+                    'body'           => (string)$this->viewer('modal-body', $this->all()),
+                    'footer'         => (string)$this->viewer('modal-footer', $this->all()),
                     'size'           => 'lg',
                     'backdrop_close' => false,
                     'in_footer'      => false,
                 ], is_array($modal) ? $modal : []);
 
                 $this->modal = partial('modal', 'cookieLaw-privacyPolicy', $attrs);
-            else :
+            } else {
                 $this->modal = false;
-            endif;
-        endif;
-
+            }
+        }
         return $this->modal;
     }
 
@@ -189,9 +188,9 @@ class CookieLaw extends ParamsBag
 
         $this->set('id', 'CookieLaw');
 
-        if (!$this->get('privacy_policy_id')) :
+        if (!$this->get('privacy_policy_id')) {
             $this->set('privacy_policy_id', get_option('wp_page_for_privacy_policy', 0));
-        endif;
+        }
     }
 
     /**
@@ -201,10 +200,9 @@ class CookieLaw extends ParamsBag
      */
     public function privacyPolicy()
     {
-        if (is_null($this->privacy_policy)) :
+        if (is_null($this->privacy_policy)) {
             $this->privacy_policy = ($post = QueryPost::createFromId($this->get('privacy_policy_id'))) ? $post : false;
-        endif;
-
+        }
         return $this->privacy_policy;
     }
 
@@ -220,7 +218,7 @@ class CookieLaw extends ParamsBag
      */
     public function viewer($view = null, $data = [])
     {
-        if (!$this->viewer) :
+        if (!$this->viewer) {
             $cinfo = class_info($this);
             $default_dir = $cinfo->getDirname() . '/Resources/views';
             $this->viewer = view()
@@ -230,12 +228,11 @@ class CookieLaw extends ParamsBag
                     ? $override_dir
                     : (is_dir($default_dir) ? $default_dir : $cinfo->getDirname()))
                 ->set('cookie-law', $this);
-        endif;
+        }
 
-        if (func_num_args() === 0) :
+        if (func_num_args() === 0) {
             return $this->viewer;
-        endif;
-
+        }
         return $this->viewer->make("_override::{$view}", $data);
     }
 }
