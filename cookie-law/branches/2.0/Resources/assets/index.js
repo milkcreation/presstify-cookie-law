@@ -1,12 +1,12 @@
-/** Css */
-import './css/styles.css';
-
-/** jQuery */
+// DEPS
+// jQuery
 import 'jquery';
 
-/** Presstify Framework */
-/** cookie-notice */
+// Presstify - Partial > cookie-notice
 import 'presstify-framework/partial/cookie-notice/index';
 
-/** modal */
+// Presstify - Partial > modal
 import 'presstify-framework/partial/modal/index';
+
+// CSS
+import './css/styles.css';
