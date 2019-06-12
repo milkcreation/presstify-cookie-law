@@ -14,7 +14,7 @@ use tiFy\Wordpress\Query\QueryPost;
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.13
+ * @version 2.0.14
  *
  * USAGE :
  * Activation
@@ -101,8 +101,8 @@ class CookieLaw extends ParamsBag
 
         add_action('wp_enqueue_scripts', function () {
             if ($this->get('wp_enqueue_scripts')) {
-                partial('modal')->enqueue_scripts();
-                partial('cookie-notice')->enqueue_scripts();
+                partial('modal')->enqueue();
+                partial('cookie-notice')->enqueue();
                 wp_enqueue_style('CookieLaw');
             }
         });
