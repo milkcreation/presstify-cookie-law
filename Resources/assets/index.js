@@ -9,4 +9,4 @@ import 'presstify-framework/partial/cookie-notice/index';
 import 'presstify-framework/partial/modal/index';
 
 // CSS
-import './css/styles.css';
+import './scss/styles.scss';
