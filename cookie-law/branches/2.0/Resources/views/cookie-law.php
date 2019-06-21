@@ -2,7 +2,6 @@
 /**
  * Cookie Law - Gabarit principal
  * ---------------------------------------------------------------------------------------------------------------------
- *
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>
@@ -10,7 +9,6 @@
 
 <?php
 echo partial('cookie-notice', [
-    'accept'        => false,
     'attrs'         => [
         'id' => $this->get('id'),
     ],
@@ -19,4 +17,5 @@ echo partial('cookie-notice', [
     'cookie_expire' => YEAR_IN_SECONDS,
     'dismiss'       => false,
     'type'          => 'info',
+    'trigger'       => false
 ]);

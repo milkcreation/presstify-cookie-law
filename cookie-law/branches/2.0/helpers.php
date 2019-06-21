@@ -1,13 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-use tiFy\Plugins\CookieLaw\CookieLaw;
+use tiFy\Plugins\CookieLaw\Contracts\CookieLaw;
 
 if (!function_exists('cookie_law')) {
     /**
-     * Récupération de l'instance.
-     *
-     * {@internal  Permet l'affichage de la bannière de régles de cookie si appelé en tant que string ou au travers
-     * d'un echo.}
+     * Récupération de l'instance de gestionnaire de plugin.
      *
      * @return CookieLaw|null
      */
