@@ -10,7 +10,7 @@ return [
      *
      * @var boolean
      */
-    'display'                => true,
+    'display'            => true,
 
     /**
      * Activation de l'affichage de la politique de confidentialité dans une fenêtre modale ou liste des attributs de
@@ -18,23 +18,18 @@ return [
      *
      * @var boolean|array
      */
-    'modal'                  => true,
+    'modal'              => true,
 
     /**
-     * Activation de l'administrabilité de la page d'accroche de la politique de confidentialité ou Attributs de
-     * configuration de la page d'accroche de la politique.
+     * Données de politique de confidentialité.
      *
-     * @var boolean|array
+     * @var array
      */
-    'page-hook'              => true,
-
-    /**
-     * Identifiant de qualification de la page de politique de confidentialité.
-     * {@internal Utilise la page par défaut native de Wordpress}
-     *
-     * @var string
-     */
-    'privacy_policy_page_id' => '',
+    'privacy_policy'     => [
+        'title'     => '',
+        'content'   => '',
+        'permalink' => '',
+    ],
 
     /**
      * Attributs de configuration du gestionnaire d'affichage de gabarits.
@@ -43,7 +38,18 @@ return [
      *
      * @var array
      */
-    'viewer'                 => [],
+    'viewer'             => [],
+
+    /**
+     * WORDPRESS
+     */
+    /**
+     * Activation de l'administrabilité de la page d'accroche de la politique de confidentialité ou Attributs de
+     * configuration de la page d'accroche de la politique.
+     *
+     * @var boolean|array
+     */
+    'page-hook'          => true,
 
     /**
      * Désactivation du chargement automatique des scripts.
@@ -52,5 +58,5 @@ return [
      *
      * @var boolean
      */
-    'wp_enqueue_scripts'     => true
+    'wp_enqueue_scripts' => true,
 ];
