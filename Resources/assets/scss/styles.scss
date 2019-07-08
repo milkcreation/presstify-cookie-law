@@ -1,16 +1,22 @@
-.CookieLaw-notice {
+[data-control="notice"] {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 10px 100px;
-    text-align: center;
-    z-index: 1001;
-    background-color: #2B2B2B;
-    color: #FFF;
+    z-index: 1000;
 
     -webkit-transition: opacity 0.5s;
     transition: opacity 0.5s;
+}
+
+.CookieLaw-notice {
+    position:relative;
+    z-index: 1;
+    padding: 10px 100px;
+    text-align: center;
+
+    background-color: #2B2B2B;
+    color: #FFF;
 }
 
 .CookieLaw-notice[aria-hide="true"] {
@@ -73,7 +79,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 0;
     opacity:0.5;
     background-color:#FFF;
 
