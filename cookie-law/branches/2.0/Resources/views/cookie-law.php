@@ -10,6 +10,7 @@
 <?php echo partial('cookie-notice', [
     'attrs'   => [
         'id' => $this->get('id'),
+        'class' => '%s CookieLaw'
     ],
     'content' => $this->fetch('notice', $this->all()),
     'cookie'  => [
