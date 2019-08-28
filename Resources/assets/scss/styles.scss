@@ -84,8 +84,10 @@
 
 body.modal-open .CookieLaw-notice {
     opacity:0;
+    max-height:100%;
 }
 
 body.modal-open .CookieLaw-backdrop {
     opacity:0;
+    max-height:100%;
 }
