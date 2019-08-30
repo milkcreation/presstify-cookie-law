@@ -80,8 +80,8 @@ class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
 
             if (($hook = PageHook::get('cookie-law')) && ($post = $hook->post())) {
                 $this->set('privacy_policy', [
-                    'title'     => $post->getTitle(),
                     'content'   => $post->getContent(),
+                    'title'     => $post->getTitle(),
                     'permalink' => $post->getPermalink(),
                 ]);
             }
