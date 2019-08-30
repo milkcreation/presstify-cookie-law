@@ -30,7 +30,7 @@ class CookieLawServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->getContainer()->share(CookieLawContract::class, function() {
-            return (new CookieLaw($this->getContainer()))->set(config('cookie-law', []))->parse();
+            return (new CookieLaw($this->getContainer()));
         });
 
         $this->getContainer()->share('cookie-law.viewer', function() {
@@ -47,10 +47,12 @@ class CookieLawServiceProvider extends ServiceProvider
 
         add_action('after_setup_theme', function() {
             $this->getContainer()->share(CookieLawContract::class, function() {
-                return (new WordpressCookieLaw($this->getContainer()))->set(config('cookie-law', []))->parse();
+                return (new WordpressCookieLaw($this->getContainer()));
             });
 
             $this->manager = $this->getContainer()->get(CookieLawContract::class);
+
+            $this->manager->set(config('cookie-law', []))->parse();
         });
     }
 }
