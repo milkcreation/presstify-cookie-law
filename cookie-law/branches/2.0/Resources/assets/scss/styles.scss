@@ -1,7 +1,10 @@
+@import '~presstify-framework/partial/cookie-notice/scss/styles';
+@import '~presstify-framework/partial/modal/scss/styles';
+
 .CookieLaw {
     position: fixed;
-    bottom: 0;
     left: 0;
+    bottom: 0;
     right: 0;
     z-index: 1000;
     transition: opacity 0.5s;

@@ -8,12 +8,10 @@ use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
 use tiFy\Support\{ParamsBag, Proxy\Partial};
 
 /**
- * Class CookieLaw
- *
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.22
+ * @version 2.0.23
  *
  * USAGE :
  * Activation
