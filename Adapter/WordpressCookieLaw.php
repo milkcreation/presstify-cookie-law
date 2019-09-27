@@ -63,18 +63,19 @@ class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
 
         if (($page_hook = $this->get('page-hook'))) {
             $defaults = [
-                'option_name'         => 'wp_page_for_privacy_policy',
-                'title'               => __('Page d\'affichage de politique de confidentialité', 'tify'),
-                'desc'                => '',
-                'object_type'         => 'post',
-                'object_name'         => 'page',
+                'admin'               => true,
                 'id'                  => get_option('wp_page_for_privacy_policy') ?: 0,
-                'listorder'           => 'menu_order, title',
-                'show_option_none'    => '',
+                'desc'                => '',
                 'display_post_states' => false,
                 'edit_form_notice'    => __(
                     'Vous éditez actuellement la page d\'affichage de politique de confidentialité.', 'tify'
                 ),
+                'listorder'           => 'menu_order, title',
+                'object_type'         => 'post',
+                'object_name'         => 'page',
+                'option_name'         => 'wp_page_for_privacy_policy',
+                'show_option_none'    => '',
+                'title'               => __('Page d\'affichage de politique de confidentialité', 'tify'),
             ];
             PageHook::set('cookie-law', is_array($page_hook) ? array_merge($defaults, $page_hook) : $defaults);
 
