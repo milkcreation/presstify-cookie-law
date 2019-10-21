@@ -5,7 +5,7 @@ namespace tiFy\Plugins\CookieLaw;
 use BadMethodCallException;
 use Exception;
 use tiFy\Contracts\Partial\Modal;
-use tiFy\Wordpress\Contracts\QueryPost;
+use tiFy\Wordpress\Contracts\Query\QueryPost;
 use tiFy\View\ViewController;
 
 /**
