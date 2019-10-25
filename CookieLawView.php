@@ -51,7 +51,7 @@ class CookieLawView extends ViewController
     {
         if (in_array($name, $this->mixins)) {
             try {
-                return $this->engine->get('cookie-law')->$name(...$arguments);
+                return $this->engine->params('cookie-law')->$name(...$arguments);
             } catch (Exception $e) {
                 throw new BadMethodCallException(sprintf(__('La méthode %s n\'est pas disponible.', 'tify'), $name));
             }

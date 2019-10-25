@@ -15,5 +15,4 @@
 
     <?php $this->insert('notice-close', $this->all()); ?>
 </div>
-
 <div class="CookieLaw-backdrop"></div>
