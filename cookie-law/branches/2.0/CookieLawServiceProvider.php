@@ -42,7 +42,7 @@ class CookieLawServiceProvider extends ServiceProvider
                 ->setOverrideDir((($override_dir = $this->manager->get('viewer.override_dir')) && is_dir($override_dir))
                     ? $override_dir
                     : (is_dir($default_dir) ? $default_dir : __DIR__))
-                ->set('cookie-law', $this->manager);
+                ->setParam('cookie-law', $this->manager);
         });
 
         add_action('after_setup_theme', function() {

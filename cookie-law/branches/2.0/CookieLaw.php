@@ -11,7 +11,7 @@ use tiFy\Support\{ParamsBag, Proxy\Partial};
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.26
+ * @version 2.0.27
  *
  * USAGE :
  * Activation
