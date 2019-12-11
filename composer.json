@@ -7,10 +7,11 @@
     "plugins",
     "wordpress",
     "cookie",
+    "rgpd",
     "gprd"
   ],
   "homepage": "https://svn.tigreblanc.fr/presstify-plugins/cookie-law",
-  "time": "2018-05-25",
+  "time": "2019-12-10",
   "license": "proprietary",
   "authors": [
     {
@@ -27,18 +28,22 @@
   ],
   "require": {
     "composer/installers": "~1.0",
-    "presstify/framework": "^2.0"
+    "presstify-plugins/bridge": "2.0.*"
   },
   "autoload": {
+    "files": [
+      "helpers.php"
+    ],
     "psr-4": {
       "tiFy\\Plugins\\CookieLaw\\": ""
     }
   },
   "minimum-stability": "dev",
-  "prefer-stable": true,
-  "config" : {
+  "prefer-stable": true,  
+  "config": {
+    "optimize-autoloader": true,
     "preferred-install": "dist",
-    "sort-packages": true,
-    "optimize-autoloader": true
+    "secure-http": false,
+    "sort-packages": true
   }
 }
