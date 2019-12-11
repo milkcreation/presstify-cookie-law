@@ -11,17 +11,12 @@
     "gprd"
   ],
   "homepage": "https://svn.tigreblanc.fr/presstify-plugins/cookie-law",
-  "time": "2019-10-25",
+  "time": "2019-12-11",
   "license": "proprietary",
   "authors": [
     {
       "name": "Jordy Manner",
       "email": "jordy.manner@milkcreation.fr",
-      "role": "Developper"
-    },
-    {
-      "name": "Louis Dherent",
-      "email": "louis@tigreblanc.fr",
       "role": "Developper"
     }
   ],
@@ -33,7 +28,7 @@
   ],
   "require": {
     "composer/installers": "~1.0",
-    "presstify/framework": "2.0.*"
+    "presstify/framework": ">=1.4"
   },
   "autoload": {
     "files": [
