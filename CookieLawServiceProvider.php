@@ -3,8 +3,8 @@
 namespace tiFy\Plugins\CookieLaw;
 
 use tiFy\Container\ServiceProvider;
-use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
-use tiFy\Plugins\CookieLaw\Adapter\WordpressCookieLaw;
+use tiFy\Plugins\CookieLaw\{Adapter\WordpressCookieLaw, Contracts\CookieLaw as CookieLawContract};
+use tiFy\Support\Proxy\View;
 
 class CookieLawServiceProvider extends ServiceProvider
 {
@@ -21,7 +21,7 @@ class CookieLawServiceProvider extends ServiceProvider
      */
     protected $provides = [
         CookieLawContract::class,
-        'cookie-law.viewer'
+        'cookie-law.view',
     ];
 
     /**
@@ -29,24 +29,21 @@ class CookieLawServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->getContainer()->share(CookieLawContract::class, function() {
-            return (new CookieLaw($this->getContainer()));
+        $this->getContainer()->share(CookieLawContract::class, function () {
+            return new CookieLaw($this->getContainer());
         });
 
-        $this->getContainer()->share('cookie-law.viewer', function() {
-            $default_dir = __DIR__ . '/Resources/views';
-
-            return view()
-                ->setDirectory(is_dir($default_dir) ? $default_dir : null)
-                ->setController(CookieLawView::class)
-                ->setOverrideDir((($override_dir = $this->manager->get('viewer.override_dir')) && is_dir($override_dir))
-                    ? $override_dir
-                    : (is_dir($default_dir) ? $default_dir : __DIR__))
-                ->setParam('cookie-law', $this->manager);
+        $this->getContainer()->share('cookie-law.view', function () {
+            return View::register('cookie-law', array_merge($this->manager->get('viewer', []), [
+                'cookie-law'   => $this->manager,
+                'directory'    => __DIR__ . '/Resources/views',
+                'engine'       => 'plates',
+                'factory'      => CookieLawView::class,
+            ]));
         });
 
-        add_action('after_setup_theme', function() {
-            $this->getContainer()->share(CookieLawContract::class, function() {
+        add_action('after_setup_theme', function () {
+            $this->getContainer()->share(CookieLawContract::class, function () {
                 return (new WordpressCookieLaw($this->getContainer()));
             });
 

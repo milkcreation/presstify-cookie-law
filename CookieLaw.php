@@ -11,7 +11,7 @@ use tiFy\Support\{ParamsBag, Proxy\Partial};
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.28
+ * @version 2.0.29
  *
  * USAGE :
  * Activation
@@ -140,7 +140,7 @@ class CookieLaw extends ParamsBag implements CookieLawContract
      */
     public function viewer(?string $view = null, array $data = [])
     {
-        $viewer = $this->container->get('cookie-law.viewer');
+        $viewer = $this->container->get('cookie-law.view');
 
         if (func_num_args() === 0) {
             return $viewer;

@@ -6,11 +6,9 @@ use BadMethodCallException;
 use Exception;
 use tiFy\Contracts\Partial\Modal;
 use tiFy\Wordpress\Contracts\Query\QueryPost;
-use tiFy\View\ViewController;
+use tiFy\View\Factory\PlatesFactory;
 
 /**
- * Class FieldView
- *
  * @method string after()
  * @method string attrs()
  * @method string before()
@@ -20,7 +18,7 @@ use tiFy\View\ViewController;
  * @method Modal modal()
  * @method false|QueryPost privacyPolicy()
  */
-class CookieLawView extends ViewController
+class CookieLawView extends PlatesFactory
 {
     /**
      * Liste des méthodes héritées.
@@ -40,22 +38,23 @@ class CookieLawView extends ViewController
     /**
      * Translation d'appel des méthodes de l'application associée.
      *
-     * @param string $name Nom de la méthode à appeler.
-     * @param array $arguments Liste des variables passées en argument.
+     * @param string $method Nom de la méthode à appeler.
+     * @param array $parameters Liste des variables passées en argument.
      *
      * @return mixed
      *
      * @throws BadMethodCallException
      */
-    public function __call($name, $arguments)
+    public function __call($method, $parameters)
     {
-        if (in_array($name, $this->mixins)) {
+        if (in_array($method, $this->mixins)) {
             try {
-                return $this->engine->params('cookie-law')->$name(...$arguments);
+                return $this->engine()->params('cookie-law')->$method(...$parameters);
             } catch (Exception $e) {
-                throw new BadMethodCallException(sprintf(__('La méthode %s n\'est pas disponible.', 'tify'), $name));
+                throw new BadMethodCallException(sprintf(__('La méthode %s n\'est pas disponible.', 'tify'), $method));
             }
+        } else {
+            return parent::__call($method, $parameters);
         }
-        throw new BadMethodCallException(sprintf(__('La méthode %s n\'est pas disponible.', 'tify'), $name));
     }
 }

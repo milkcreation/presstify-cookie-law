@@ -5,6 +5,8 @@
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 if ($this->modal()) :
+
+
     echo $this->modal()->trigger([
         'attrs'   => [
             'class'  => 'CookieLaw-button CookieLaw-button--accept',

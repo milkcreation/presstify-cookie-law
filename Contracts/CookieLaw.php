@@ -3,8 +3,7 @@
 namespace tiFy\Plugins\CookieLaw\Contracts;
 
 use tiFy\Contracts\Partial\Modal;
-use tiFy\Contracts\View\ViewController;
-use tiFy\Contracts\View\ViewEngine;
+use tiFy\Contracts\View\{PlatesFactory, PlatesEngine};
 use tiFy\Contracts\Support\ParamsBag;
 
 interface CookieLaw extends ParamsBag
@@ -52,7 +51,7 @@ interface CookieLaw extends ParamsBag
      * @param string|null view Nom de qualification du gabarit.
      * @param array $data Liste des variables passées en argument.
      *
-     * @return ViewController|ViewEngine
+     * @return PlatesFactory|PlatesEngine
      */
     public function viewer(?string $view = null, array $data = []);
 }
