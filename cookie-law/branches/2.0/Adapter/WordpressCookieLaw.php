@@ -5,7 +5,7 @@ namespace tiFy\Plugins\CookieLaw\Adapter;
 use Psr\Container\ContainerInterface as Container;
 use tiFy\Plugins\CookieLaw\Contracts\{CookieLaw as CookieLawContract, WordpressCookieLaw as WordpressCookieLawContract};
 use tiFy\Plugins\CookieLaw\CookieLaw;
-use tiFy\Wordpress\Proxy\{PageHook, Partial};
+use tiFy\Wordpress\Proxy\PageHook;
 
 class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
 {
@@ -20,22 +20,6 @@ class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
     {
         parent::__construct($container);
 
-        add_action('init', function () {
-            wp_register_style(
-                'CookieLaw', class_info($this)->getUrl() . '/Resources/assets/css/styles.css',
-                ['dashicons'],
-                180921
-            );
-        });
-
-        add_action('wp_enqueue_scripts', function () {
-            if ($this->get('wp_enqueue_scripts')) {
-                Partial::get('modal')->enqueue();
-                Partial::get('cookie-notice')->enqueue();
-                wp_enqueue_style('CookieLaw');
-            }
-        });
-
         add_action('wp_footer', function () {
             if ($this->get('display')) {
                 echo $this->display();
@@ -49,8 +33,7 @@ class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
     public function defaults(): array
     {
         return array_merge(parent::defaults(), [
-            'page-hook'          => true,
-            'wp_enqueue_scripts' => true,
+            'page-hook'          => true
         ]);
     }
 
