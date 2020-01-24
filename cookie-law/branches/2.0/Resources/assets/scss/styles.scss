@@ -15,7 +15,7 @@
 .CookieLaw-notice {
     position:relative;
     z-index: 1;
-    padding: 10px 100px;
+    padding: 30px 10px 0;
     text-align: center;
     background-color: #2B2B2B;
     color: #FFF;
@@ -29,9 +29,13 @@
     margin-bottom: 10px;
 }
 
+.CookieLaw-buttons {
+    margin:0 -5px;
+}
+
 .CookieLaw-button {
     display: inline-block;
-    margin: 0 2px;
+    margin: 0 2px 5px;
     padding: 0.6em 1.2em;
 
     line-height: 1;
