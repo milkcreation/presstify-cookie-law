@@ -9,9 +9,11 @@
 <div class="CookieLaw-notice">
     <?php $this->insert('notice-text', $this->all()); ?>
 
-    <?php $this->insert('notice-accept', $this->all()); ?>
+    <div class="CookieLaw-buttons">
+        <?php $this->insert('notice-accept', $this->all()); ?>
 
-    <?php $this->insert('notice-read', $this->all()); ?>
+        <?php $this->insert('notice-read', $this->all()); ?>
+    </div>
 
     <?php $this->insert('notice-close', $this->all()); ?>
 </div>
