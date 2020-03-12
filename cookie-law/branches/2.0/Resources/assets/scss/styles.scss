@@ -85,10 +85,11 @@
     right: 0;
     bottom: 0;
     left: 0;
+    height:100%;
     z-index: 0;
     opacity:0.5;
     background-color:#FFF;
-    transition: opacity 0.5s;
+    transition: all 0.5s;
 }
 
 body.modal-open .CookieLaw-notice {
