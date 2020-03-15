@@ -2,7 +2,6 @@
 
 namespace tiFy\Plugins\CookieLaw\Adapter;
 
-use Psr\Container\ContainerInterface as Container;
 use tiFy\Plugins\CookieLaw\Contracts\{CookieLaw as CookieLawContract, WordpressCookieLaw as WordpressCookieLawContract};
 use tiFy\Plugins\CookieLaw\CookieLaw;
 use tiFy\Wordpress\Proxy\PageHook;
@@ -10,29 +9,12 @@ use tiFy\Wordpress\Proxy\PageHook;
 class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
 {
     /**
-     * CONSTRUCTEUR.
-     *
-     * @param Container $container Instance du conteneur d'injection de dépendance.
-     *
-     * @return void
-     */
-    public function __construct(?Container $container = null)
-    {
-        parent::__construct($container);
-
-        add_action('wp_footer', function () {
-            if ($this->get('display')) {
-                echo $this->display();
-            }
-        }, 999999);
-    }
-
-    /**
      * @inheritDoc
      */
     public function defaults(): array
     {
         return array_merge(parent::defaults(), [
+            'in_footer'          => true,
             'page-hook'          => true
         ]);
     }
@@ -69,6 +51,10 @@ class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
                     'permalink' => $post->getPermalink(),
                 ]);
             }
+        }
+
+        if ($this->get('in_footer')) {
+            add_action('wp_footer', function () { echo $this; }, 999999);
         }
 
         return $this;

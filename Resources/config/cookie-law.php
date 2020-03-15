@@ -2,10 +2,10 @@
 
 return [
     /**
-     * Chargement automatique de l'affichage.
+     * Chargement automatique de l'affichage (Wordpress).
      * @var boolean
      */
-    'display'        => true,
+    'in_footer'        => true,
 
     /**
      * Activation de l'affichage de la politique de confidentialité dans une fenêtre modale ou liste des attributs de
