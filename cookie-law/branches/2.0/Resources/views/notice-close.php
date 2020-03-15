@@ -11,5 +11,5 @@ echo partial('tag', [
         'href'        => "#{$this->get('attrs.id')}",
         'data-toggle' => 'notice.dismiss'
     ],
-    'content' => __('Fermer', 'tify')
+    'content' => ''
 ]);

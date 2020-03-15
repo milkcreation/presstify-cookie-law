@@ -11,7 +11,7 @@ use tiFy\Support\{ParamsBag, Proxy\Partial};
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.35
+ * @version 2.0.36
  *
  * USAGE :
  * Activation
@@ -68,7 +68,7 @@ class CookieLaw extends ParamsBag implements CookieLawContract
      */
     public function __toString(): string
     {
-        return (string)$this->display();
+        return (string)$this->render();
     }
 
     /**
@@ -79,7 +79,6 @@ class CookieLaw extends ParamsBag implements CookieLawContract
     public function defaults(): array
     {
         return [
-            'display'        => true,
             'modal'          => true,
             'privacy_policy' => [],
             'viewer'         => [],
@@ -89,31 +88,25 @@ class CookieLaw extends ParamsBag implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function display(): string
-    {
-        return (string)$this->viewer('cookie-law', $this->all());
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function modal(): ?Modal
     {
-        if (is_null($this->modal) && ($modal = $this->get('modal'))) {
+        if (is_null($this->modal) && $this->get('modal')) {
+            foreach (['header', 'body', 'footer'] as $part) {
+                if (!$this->has("modal.content.{$part}")) {
+                    $this->set("modal.content.{$part}", $this->viewer("modal-{$part}", $this->all()));
+                }
+            }
+
             $this->modal = Partial::get('modal', 'cookieLaw-privacyPolicy', array_merge([
-                'attrs'          => [
+                'attrs'     => [
                     'id' => 'Modal-cookieLaw-privacyPolicy',
                 ],
-                'content'        => [
-                    'header'         => (string)$this->viewer('modal-header', $this->all()),
-                    'body'           => (string)$this->viewer('modal-body', $this->all()),
-                    'footer'         => (string)$this->viewer('modal-footer', $this->all()),
-                ],
-                'options'        => ['show' => false, 'backdrop' => true],
-                'size'           => 'lg',
-                'in_footer'      => false,
-            ], is_array($modal) ? $modal : []));
+                'options'   => ['show' => false, 'backdrop' => true],
+                'size'      => 'xl',
+                'in_footer' => false,
+            ], $this->get('modal', [])));
         }
+
         return $this->modal;
     }
 
@@ -125,14 +118,22 @@ class CookieLaw extends ParamsBag implements CookieLawContract
         parent::parse();
 
         $this->set([
-            'id' => 'CookieLaw',
+            'id'             => 'CookieLaw',
             'privacy_policy' => [
-                'content'   => (string)$this->viewer('default-txt'),
-                'title'     => (string)$this->viewer('default-title'),
-            ]
+                'content' => $this->viewer('default-txt'),
+                'title'   => $this->viewer('default-title'),
+            ],
         ]);
 
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function render(): string
+    {
+        return (string)$this->viewer('index', $this->all());
     }
 
     /**

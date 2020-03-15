@@ -23,13 +23,6 @@ interface CookieLaw extends ParamsBag
     public function defaults(): array;
 
     /**
-     * Affichage du bandeau de validation.
-     *
-     * @return string
-     */
-    public function display(): string;
-
-    /**
      * Récupération de la modale d'affichage de la politique de confidentialité.
      *
      * @return Modal|null
@@ -42,6 +35,13 @@ interface CookieLaw extends ParamsBag
      * @return static
      */
     public function parse(): CookieLaw;
+
+    /**
+     * Affichage.
+     *
+     * @return string
+     */
+    public function render(): string;
 
     /**
      * Récupération d'un instance du controleur de liste des gabarits d'affichage ou d'un gabarit d'affichage.
