@@ -1,7 +1,6 @@
 <?php
 /**
- * Cookie Law - Modale | Corps.
+ * Cookie Law - Modale | Pied.
  * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
-echo $this->get('privacy_policy.content');

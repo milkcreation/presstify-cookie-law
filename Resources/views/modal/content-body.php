@@ -1,8 +1,10 @@
 <?php
 /**
- * Cookie Law - Modale | Entête.
+ * Cookie Law - Modale | Corps.
  * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>
-<h3 class="modal-title"><?php echo $this->get('privacy_policy.title'); ?></h3>
+<div style="padding:20px;text-align:center;">
+    <?php _e('Politique de confidentialité en cours de chargement ...', 'tify'); ?>
+</div>
