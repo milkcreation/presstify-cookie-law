@@ -11,23 +11,20 @@ use tiFy\Support\{ParamsBag, Proxy\Partial};
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.36
+ * @version 2.0.37
  *
  * USAGE :
  * Activation
  * ---------------------------------------------------------------------------------------------------------------------
- * Dans config/app.php ajouter \tiFy\Plugins\CookieLaw\CookieLawServiceProvider à la liste des fournisseurs de services.
- * ex.
+ * Dans config/app.php
+ * >> ajouter CookieLawServiceProvider à la liste des fournisseurs de services.
  * <?php
- * ...
- * use tiFy\Plugins\CookieLaw\CookieLawServiceProvider;
- * ...
  *
  * return [
  *      ...
  *      'providers' => [
  *          ...
- *          CookieLawServiceProvider::class
+ *          tiFy\Plugins\CookieLaw\CookieLawServiceProvider::class
  *          ...
  *      ]
  * ];
@@ -39,6 +36,12 @@ use tiFy\Support\{ParamsBag, Proxy\Partial};
  */
 class CookieLaw extends ParamsBag implements CookieLawContract
 {
+    /**
+     * Instance de l'extension de gestion de politique de confidentialité du site.
+     * @var CookieLawContract|null
+     */
+    protected static $instance;
+
     /**
      * Instance du conteneur d'injection de dépendances.
      * @var Container
@@ -60,7 +63,21 @@ class CookieLaw extends ParamsBag implements CookieLawContract
      */
     public function __construct(?Container $container = null)
     {
-        $this->container = $container;
+        if (!static::$instance instanceof CookieLawContract) {
+            static::$instance = $this;
+
+            if (!is_null($container)) {
+                $this->setContainer($container);
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function instance(): ?CookieLawContract
+    {
+        return static::$instance;
     }
 
     /**
@@ -69,6 +86,14 @@ class CookieLaw extends ParamsBag implements CookieLawContract
     public function __toString(): string
     {
         return (string)$this->render();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getContainer(): ?Container
+    {
+        return $this->container;
     }
 
     /**
@@ -93,11 +118,19 @@ class CookieLaw extends ParamsBag implements CookieLawContract
         if (is_null($this->modal) && $this->get('modal')) {
             foreach (['header', 'body', 'footer'] as $part) {
                 if (!$this->has("modal.content.{$part}")) {
-                    $this->set("modal.content.{$part}", $this->viewer("modal-{$part}", $this->all()));
+                    $this->set("modal.content.{$part}", $this->viewer("modal/content-{$part}", $this->all()));
                 }
             }
 
+            if (!$this->has('modal.viewer')) {
+                $this->set('modal.viewer', [
+                    'override_dir' => $this->viewer()->getOverrideDir('/modal')
+                        ?: $this->viewer()->getDirectory() . '/modal',
+                ]);
+            }
+
             $this->modal = Partial::get('modal', 'cookieLaw-privacyPolicy', array_merge([
+                'ajax'      => true,
                 'attrs'     => [
                     'id' => 'Modal-cookieLaw-privacyPolicy',
                 ],
@@ -134,6 +167,26 @@ class CookieLaw extends ParamsBag implements CookieLawContract
     public function render(): string
     {
         return (string)$this->viewer('index', $this->all());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function resources($path = ''): string
+    {
+        $path = $path ? '/' . ltrim($path, '/') : '';
+
+        return file_exists(__DIR__ . "/Resources{$path}") ? __DIR__ . "/Resources{$path}" : '';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setContainer(Container $container): CookieLawContract
+    {
+        $this->container = $container;
+
+        return $this;
     }
 
     /**

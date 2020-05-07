@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
-use tiFy\Plugins\CookieLaw\Contracts\CookieLaw;
+use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
+use tiFy\Plugins\CookieLaw\CookieLaw;
 
 if (!function_exists('cookie_law')) {
     /**
@@ -8,8 +9,8 @@ if (!function_exists('cookie_law')) {
      *
      * @return CookieLaw|null
      */
-    function cookie_law(): ?CookieLaw
+    function cookie_law(): ?CookieLawContract
     {
-        return app(CookieLaw::class);
+        return CookieLaw::instance();
     }
 }

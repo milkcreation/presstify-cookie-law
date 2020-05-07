@@ -2,6 +2,7 @@
 
 namespace tiFy\Plugins\CookieLaw\Contracts;
 
+use Psr\Container\ContainerInterface as Container;
 use tiFy\Contracts\Partial\Modal;
 use tiFy\Contracts\View\{PlatesFactory, PlatesEngine};
 use tiFy\Contracts\Support\ParamsBag;
@@ -9,11 +10,25 @@ use tiFy\Contracts\Support\ParamsBag;
 interface CookieLaw extends ParamsBag
 {
     /**
+     * Récupération de l'instance de l'extension gestion des inforamtions de contact.
+     *
+     * @return static|null
+     */
+    public static function instance(): ?CookieLaw;
+
+    /**
      * Résolution de sortie de la classe en tant que chaîne de caractère.
      *
      * @return string
      */
     public function __toString(): string;
+
+    /**
+     * Récupération du conteneur d'injection de dépendances.
+     *
+     * @return Container|null
+     */
+    public function getContainer(): ?Container;
 
     /**
      * @inheritDoc
@@ -42,6 +57,24 @@ interface CookieLaw extends ParamsBag
      * @return string
      */
     public function render(): string;
+
+    /**
+     * Chemin absolu vers une ressources (fichier|répertoire).
+     *
+     * @param string $path Chemin relatif vers la ressource.
+     *
+     * @return string
+     */
+    public function resources($path = ''): string;
+
+    /**
+     * Définition du conteneur d'injection de dépendances.
+     *
+     * @param Container $container
+     *
+     * @return static
+     */
+    public function setContainer(Container $container): CookieLaw;
 
     /**
      * Récupération d'un instance du controleur de liste des gabarits d'affichage ou d'un gabarit d'affichage.
