@@ -4,11 +4,11 @@
  */
 ?>
 <div class="modal-header">
-    <h3 class="modal-title"><?php echo cookie_law()->get('privacy_policy.title'); ?></h3>
+    <h3 class="modal-title"><?php echo $this->get('title'); ?></h3>
 </div>
 
 <div class="modal-body">
-    <?php echo cookie_law()->get('privacy_policy.content'); ?>
+    <?php echo $this->get('content'); ?>
 </div>
 
 <div class="modal-footer">

@@ -5,13 +5,14 @@ namespace tiFy\Plugins\CookieLaw;
 use Psr\Container\ContainerInterface as Container;
 use tiFy\Contracts\Partial\Modal;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
-use tiFy\Support\{ParamsBag, Proxy\Partial};
+use tiFy\Support\ParamsBag;
+use tiFy\Support\Proxy\{Partial, Request, Router};
 
 /**
  * @desc Extension PresstiFy d'affichage des règles de cookie.
  * @author Jordy Manner <jordy@tigreblanc.fr>
  * @package tiFy\Plugins\CookieLaw
- * @version 2.0.37
+ * @version 2.0.38
  *
  * USAGE :
  * Activation
@@ -54,6 +55,8 @@ class CookieLaw extends ParamsBag implements CookieLawContract
      */
     protected $modal;
 
+    protected $xhrModalUrl;
+
     /**
      * CONSTRUCTEUR.
      *
@@ -69,6 +72,8 @@ class CookieLaw extends ParamsBag implements CookieLawContract
             if (!is_null($container)) {
                 $this->setContainer($container);
             }
+
+            $this->xhrModalUrl = Router::xhr(md5('CookieLaw'), [$this, 'xhrModal'])->getUrl();
         }
     }
 
@@ -130,7 +135,9 @@ class CookieLaw extends ParamsBag implements CookieLawContract
             }
 
             $this->modal = Partial::get('modal', 'cookieLaw-privacyPolicy', array_merge([
-                'ajax'      => true,
+                'ajax'      => [
+                    'url' => $this->xhrModalUrl,
+                ],
                 'attrs'     => [
                     'id' => 'Modal-cookieLaw-privacyPolicy',
                 ],
@@ -201,5 +208,23 @@ class CookieLaw extends ParamsBag implements CookieLawContract
         }
 
         return $viewer->render($view, $data);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function xhrModal()
+    {
+        $modal = $this->modal();
+
+        $modal->set('viewer', Request::input('viewer', []))->parseViewer();
+
+        return [
+            'success' => true,
+            'data'    => $modal->viewer('ajax-content', [
+                'title'   => $this->get('privacy_policy.title'),
+                'content' => $this->get('privacy_policy.content'),
+            ]),
+        ];
     }
 }
