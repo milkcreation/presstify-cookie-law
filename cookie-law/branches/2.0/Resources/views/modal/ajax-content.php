@@ -10,9 +10,3 @@
 <div class="modal-body">
     <?php echo $this->get('content'); ?>
 </div>
-
-<div class="modal-footer">
-    <button type="button" class="btn btn-secondary button-secondary" data-control="modal.close">
-        <?php _e('Fermer', 'tify'); ?>
-    </button>
-</div>
