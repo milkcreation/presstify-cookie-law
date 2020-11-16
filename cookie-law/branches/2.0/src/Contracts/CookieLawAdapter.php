@@ -2,7 +2,7 @@
 
 namespace tiFy\Plugins\CookieLaw\Contracts;
 
-interface WordpressCookieLaw extends CookieLaw
+interface CookieLawAdapter
 {
 
 }
