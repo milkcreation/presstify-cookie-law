@@ -1,7 +1,7 @@
 {
   "name": "presstify-plugins/cookie-law",
-  "description": "Extension PresstiFy d'affichage des règles de cookie.",
-  "type": "presstify-plugin",
+  "description": "Cookie Law PresstiFy plugin - Privacy policy management.",
+  "homepage": "https://svn.tigreblanc.fr/presstify-plugins/cookie-law/",
   "keywords": [
     "presstify",
     "plugins",
@@ -10,9 +10,9 @@
     "rgpd",
     "gprd"
   ],
-  "homepage": "https://svn.tigreblanc.fr/presstify-plugins/cookie-law",
-  "time": "2020-09-12",
-  "license": "proprietary",
+  "type": "presstify-plugin",
+  "time": "2020-11-16",
+  "license": "MIT",
   "authors": [
     {
       "name": "Jordy Manner",
@@ -23,19 +23,27 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "https://composer.tigreblanc.fr/presstify"
+      "url": "https://composer.tigreblanc.fr/presstify/"
     }
   ],
   "require": {
     "composer/installers": "~1.0",
     "presstify/framework": ">=1.4"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0"
+  },
   "autoload": {
     "files": [
-      "helpers.php"
+      "src/helpers.php"
     ],
     "psr-4": {
-      "tiFy\\Plugins\\CookieLaw\\": ""
+      "tiFy\\Plugins\\CookieLaw\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "tiFy\\Plugins\\ThemeSuite\\Test\\": "tests"
     }
   },
   "minimum-stability": "dev",

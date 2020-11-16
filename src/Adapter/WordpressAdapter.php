@@ -2,15 +2,31 @@
 
 namespace tiFy\Plugins\CookieLaw\Adapter;
 
-use tiFy\Plugins\CookieLaw\Contracts\{CookieLaw as CookieLawContract, WordpressCookieLaw as WordpressCookieLawContract};
-use tiFy\Plugins\CookieLaw\CookieLaw;
-use tiFy\Wordpress\Proxy\PageHook;
+use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
+use tiFy\Plugins\CookieLaw\Contracts\WordpressAdapter as WordpressAdapterContract;
+//use tiFy\Wordpress\Proxy\PageHook;
 
-class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
+class WordpressAdapter implements WordpressAdapterContract
 {
     /**
-     * @inheritDoc
+     * Instance de CookieLaw
+     * @var CookieLawContract|null
      */
+    private $cookieLaw;
+
+    /**
+     * @param CookieLawContract $cookieLaw
+     *
+     * @return void
+     */
+    public function __construct(CookieLawContract $cookieLaw)
+    {
+        $this->cookieLaw = $cookieLaw;
+    }
+
+    /**
+     * @inheritDoc
+
     public function defaults(): array
     {
         return array_merge(parent::defaults(), [
@@ -18,10 +34,11 @@ class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
             'page-hook'          => true
         ]);
     }
+     * */
 
     /**
      * @inheritDoc
-     */
+
     public function parse(): CookieLawContract
     {
         parent::parse();
@@ -59,4 +76,5 @@ class WordpressCookieLaw extends CookieLaw implements WordpressCookieLawContract
 
         return $this;
     }
+     *  */
 }

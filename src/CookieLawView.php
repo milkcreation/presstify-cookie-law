@@ -36,25 +36,23 @@ class CookieLawView extends PlatesFactory
     ];
 
     /**
-     * Translation d'appel des méthodes de l'application associée.
-     *
-     * @param string $method Nom de la méthode à appeler.
-     * @param array $parameters Liste des variables passées en argument.
-     *
-     * @return mixed
-     *
-     * @throws BadMethodCallException
+     * @inheritDoc
      */
-    public function __call($method, $parameters)
+    public function __call($name, $args)
     {
-        if (in_array($method, $this->mixins)) {
+        if (in_array($name, $this->mixins)) {
             try {
-                return $this->engine()->params('cookie-law')->$method(...$parameters);
+                $cookieLaw = $this->engine->params('cookie-law');
+
+                return $cookieLaw->{$name}(...$args);
             } catch (Exception $e) {
-                throw new BadMethodCallException(sprintf(__('La méthode %s n\'est pas disponible.', 'tify'), $method));
+                throw new BadMethodCallException(sprintf(
+                    __CLASS__ . ' throws an exception during the method call [%s] with message : %s',
+                    $name, $e->getMessage()
+                ));
             }
         } else {
-            return parent::__call($method, $parameters);
+            return parent::__call($name, $args);
         }
     }
 }
