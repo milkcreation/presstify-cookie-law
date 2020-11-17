@@ -27,17 +27,17 @@ return [
     /**
      * WORDPRESS
      */
-    'wordpress' => [
+    'wordpress'      => [
         /**
          * Chargement automatique de l'affichage (Wordpress).
          * @var boolean
          */
-        'in_footer'        => true,
+        'in_footer' => true,
         /**
          * Activation de l'administrabilité de la page d'accroche de la politique de confidentialité ou Attributs de
          * configuration de la page d'accroche de la politique.
          * @var boolean|array
          */
-        'page-hook'      => true,
-    ]
+        'page-hook' => true,
+    ],
 ];

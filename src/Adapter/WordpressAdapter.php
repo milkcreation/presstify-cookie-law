@@ -4,7 +4,7 @@ namespace tiFy\Plugins\CookieLaw\Adapter;
 
 use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
 use tiFy\Plugins\CookieLaw\Contracts\WordpressAdapter as WordpressAdapterContract;
-//use tiFy\Wordpress\Proxy\PageHook;
+use tiFy\Wordpress\Proxy\PageHook;
 
 class WordpressAdapter implements WordpressAdapterContract
 {
@@ -26,24 +26,20 @@ class WordpressAdapter implements WordpressAdapterContract
 
     /**
      * @inheritDoc
-
-    public function defaults(): array
+     */
+    public function parseConfig(): CookieLawContract
     {
-        return array_merge(parent::defaults(), [
-            'in_footer'          => true,
-            'page-hook'          => true
-        ]);
-    }
-     * */
+        $conf = $this->cookieLaw->config();
 
-    /**
-     * @inheritDoc
+        if (!$conf->has('page-hook')) {
+            $conf->set('page-hook', true);
+        }
 
-    public function parse(): CookieLawContract
-    {
-        parent::parse();
+        if (!$conf->has('in_footer')) {
+            $conf->set('in_footer', true);
+        }
 
-        if (($page_hook = $this->get('page-hook'))) {
+        if ($page_hook = $conf->get('page-hook')) {
             $defaults = [
                 'admin'               => true,
                 'id'                  => get_option('wp_page_for_privacy_policy') ?: 0,
@@ -62,7 +58,7 @@ class WordpressAdapter implements WordpressAdapterContract
             PageHook::set('cookie-law', is_array($page_hook) ? array_merge($defaults, $page_hook) : $defaults);
 
             if (($hook = PageHook::get('cookie-law')) && ($post = $hook->post())) {
-                $this->set('privacy_policy', [
+                $conf->set('privacy_policy', [
                     'content'   => $post->getContent(),
                     'title'     => $post->getTitle(),
                     'permalink' => $post->getPermalink(),
@@ -70,11 +66,10 @@ class WordpressAdapter implements WordpressAdapterContract
             }
         }
 
-        if ($this->get('in_footer')) {
-            add_action('wp_footer', function () { echo $this; }, 999999);
+        if ($conf->get('in_footer')) {
+            add_action('wp_footer', function () { echo $this->cookieLaw->render(); }, 999999);
         }
 
-        return $this;
+        return $this->cookieLaw;
     }
-     *  */
 }

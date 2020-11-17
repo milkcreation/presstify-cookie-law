@@ -75,6 +75,13 @@ interface CookieLaw
     public function modal(): ?Modal;
 
     /**
+     * Traitement des attributs de configuration.
+     *
+     * @return static
+     */
+    public function parseConfig(): CookieLaw;
+
+    /**
      * Résolution de service fourni.
      *
      * @param string $alias
