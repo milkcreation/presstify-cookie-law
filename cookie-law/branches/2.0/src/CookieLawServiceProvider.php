@@ -71,10 +71,9 @@ class CookieLawServiceProvider extends ServiceProvider
             $cookieLaw = $this->getContainer()->get('cookie-law');
 
             return View::getPlatesEngine(array_merge([
-                'cookie-law' => $this->manager,
-                'directory'  => __DIR__ . '/Resources/views',
-                'engine'     => 'plates',
+                'directory'  => $cookieLaw->resources('views'),
                 'factory'    => CookieLawView::class,
+                'cookie-law' => $cookieLaw,
             ], $cookieLaw->config('viewer', [])));
         });
     }

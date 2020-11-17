@@ -132,6 +132,8 @@ class CookieLaw implements CookieLawContract
         if (!$this->booted) {
             $this->xhrModalUrl = Router::xhr(md5('CookieLaw'), [$this, 'xhrModal'])->getUrl();
 
+            $this->parseConfig();
+
             $this->booted = true;
         }
 
@@ -193,7 +195,7 @@ class CookieLaw implements CookieLawContract
      */
     public function resources(?string $path = null)
     {
-        if (!isset($this->resources) ||is_null($this->resources)) {
+        if (!isset($this->resources) || is_null($this->resources)) {
             $this->resources = Storage::local(dirname(__DIR__));
         }
 
@@ -235,47 +237,58 @@ class CookieLaw implements CookieLawContract
      */
     public function modal(): ?Modal
     {
-        if (is_null($this->modal) && $this->config('modal')) {
+        if (is_null($this->modal) && ($this->config('modal') !== false)) {
+            $this->modal = Partial::get('modal', $this->config('modal', []));
+        }
+
+        return $this->modal;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function parseConfig(): CookieLawContract
+    {
+        $this->config([
+            'id'             => 'CookieLaw',
+            'privacy_policy' => [
+                'content' => $this->view('default-txt'),
+                'title'   => $this->view('default-title'),
+            ],
+        ]);
+
+        $modal = $this->config('modal', true);
+        if ($this->config('modal') !== false) {
+            if (!is_array($modal)) {
+                $this->config([
+                    'modal' => [
+                        'ajax'      => [
+                            'url' => $this->xhrModalUrl,
+                        ],
+                        'attrs'     => [
+                            'id' => 'Modal-cookieLaw-privacyPolicy',
+                        ],
+                        'options'   => ['show' => false, 'backdrop' => true],
+                        'size'      => 'xl',
+                        'in_footer' => false,
+                    ]
+                ]);
+            }
+
             foreach (['header', 'body', 'footer'] as $part) {
                 if (!$this->config()->has("modal.content.{$part}")) {
                     $this->config([
-                        "modal.content.{$part}" => $this->view("modal/content-{$part}", $this->config()->all())
+                        "modal.content.{$part}" => $this->view("modal/content-{$part}", $this->config()->all()),
                     ]);
                 }
             }
 
-            /*if (!$this->config()->has('modal.viewer')) {
-                $this->config([
-                    'modal.viewer' => [
-                        'override_dir' => $this->view()->getOverrideDir('/modal')
-                        ?: $this->view()->getDirectory() . '/modal',
-                    ]
-                ]);
-            }*/
-
-            $this->modal = Partial::get('modal', 'cookieLaw-privacyPolicy', array_merge([
-                'ajax'      => [
-                    'url' => $this->xhrModalUrl,
-                ],
-                'attrs'     => [
-                    'id' => 'Modal-cookieLaw-privacyPolicy',
-                ],
-                'options'   => ['show' => false, 'backdrop' => true],
-                'size'      => 'xl',
-                'in_footer' => false,
-            ], $this->config('modal', [])));
+            if (!$this->config()->has('modal.viewer.override_dir')) {
+                $this->config(['modal.viewer.override_dir' => $this->resources('views/modal')]);
+            }
         }
 
-        /**
-         *  'id'             => 'CookieLaw',
-        'privacy_policy' => [
-        'content' => $this->view('default-txt'),
-        'title'   => $this->view('default-title'),
-        ]
-         */
-
-
-        return $this->modal;
+        return $this->adapter() ? $this->adapter()->parseConfig() : $this;
     }
 
     /**
@@ -292,7 +305,7 @@ class CookieLaw implements CookieLawContract
     public function view(?string $view = null, array $data = [])
     {
         if (is_null($this->viewEngine)) {
-            $this->viewEngine = $this->resources('view-engine');
+            $this->viewEngine = $this->resolve('view-engine');
         }
 
         if (func_num_args() === 0) {
@@ -307,7 +320,7 @@ class CookieLaw implements CookieLawContract
      */
     public function xhrModal(): array
     {
-        $modal = $this->modal();
+        $modal = $this->parseConfig()->modal();
 
         $viewer = Request::input('viewer', []);
         foreach ($viewer as $key => $value) {
