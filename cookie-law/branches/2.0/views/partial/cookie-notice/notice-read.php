@@ -1,7 +1,5 @@
 <?php
 /**
- * Cookie Law - Notification | Lecture de la politique de confidentialité.
- * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 if ($this->modal()) :

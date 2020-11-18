@@ -1,7 +1,5 @@
 <?php
 /**
- * Cookie Law - Modale | Texte par défaut.
- * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>

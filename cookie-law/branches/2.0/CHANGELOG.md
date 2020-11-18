@@ -1,5 +1,13 @@
 # Release Notes
 
+## [v2.0.42 (2020-11-18)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.42...v2.0.42)
+
+### Added 
+
+- Création de l'accesseur CookieLawAwareTrait
+- Création du partial PrivacyLink
+
+
 ## [v2.0.41 (2020-11-17)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.41...v2.0.41)
 
 ### Changed

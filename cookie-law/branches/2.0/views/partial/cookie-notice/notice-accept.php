@@ -1,7 +1,5 @@
 <?php
 /**
- * Cookie Law - Notification | Validation.
- * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 echo partial('tag', [
