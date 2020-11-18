@@ -4,15 +4,12 @@ namespace tiFy\Plugins\CookieLaw\Adapter;
 
 use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
 use tiFy\Plugins\CookieLaw\Contracts\WordpressAdapter as WordpressAdapterContract;
+use tiFy\Plugins\CookieLaw\CookieLawAwareTrait;
 use tiFy\Wordpress\Proxy\PageHook;
 
 class WordpressAdapter implements WordpressAdapterContract
 {
-    /**
-     * Instance de CookieLaw
-     * @var CookieLawContract|null
-     */
-    private $cookieLaw;
+    use CookieLawAwareTrait;
 
     /**
      * @param CookieLawContract $cookieLaw
@@ -21,7 +18,7 @@ class WordpressAdapter implements WordpressAdapterContract
      */
     public function __construct(CookieLawContract $cookieLaw)
     {
-        $this->cookieLaw = $cookieLaw;
+        $this->setCookieLaw($cookieLaw);
     }
 
     /**
@@ -29,7 +26,7 @@ class WordpressAdapter implements WordpressAdapterContract
      */
     public function parseConfig(): CookieLawContract
     {
-        $conf = $this->cookieLaw->config();
+        $conf = $this->cl()->config();
 
         if (!$conf->has('page-hook')) {
             $conf->set('page-hook', true);
@@ -67,9 +64,9 @@ class WordpressAdapter implements WordpressAdapterContract
         }
 
         if ($conf->get('in_footer')) {
-            add_action('wp_footer', function () { echo $this->cookieLaw->render(); }, 999999);
+            add_action('wp_footer', function () { echo $this->cl()->render(); }, 999999);
         }
 
-        return $this->cookieLaw;
+        return $this->cl();
     }
 }

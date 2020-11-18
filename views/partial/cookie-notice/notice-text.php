@@ -1,8 +1,5 @@
 <?php
 /**
- * Cookie Law - Notification | Texte.
- * ---------------------------------------------------------------------------------------------------------------------
- *
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>

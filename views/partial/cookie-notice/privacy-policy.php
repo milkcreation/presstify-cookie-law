@@ -1,7 +1,5 @@
 <?php
 /**
- * Cookie Law - Politique de confidentialité.
- * ---------------------------------------------------------------------------------------------------------------------
  * @var tiFy\Plugins\CookieLaw\CookieLawView $this
  */
 ?>

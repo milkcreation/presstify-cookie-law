@@ -9,6 +9,7 @@ use tiFy\Contracts\Partial\Modal;
 use tiFy\Contracts\View\Engine as ViewEngine;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLawAdapter;
+use tiFy\Plugins\CookieLaw\Partial\PrivacyLinkPartial;
 use tiFy\Support\ParamsBag;
 use tiFy\Support\Proxy\Partial;
 use tiFy\Support\Proxy\Request;
@@ -132,6 +133,8 @@ class CookieLaw implements CookieLawContract
         if (!$this->booted) {
             $this->xhrModalUrl = Router::xhr(md5('CookieLaw'), [$this, 'xhrModal'])->getUrl();
 
+            Partial::register('privacy-link', (new PrivacyLinkPartial())->setCookieLaw($this));
+
             $this->parseConfig();
 
             $this->booted = true;
@@ -252,8 +255,8 @@ class CookieLaw implements CookieLawContract
         $this->config([
             'id'             => 'CookieLaw',
             'privacy_policy' => [
-                'content' => $this->view('default-txt'),
-                'title'   => $this->view('default-title'),
+                'content' => $this->view('partial/cookie-notice/default-txt'),
+                'title'   => $this->view('partial/cookie-notice/default-title'),
             ],
         ]);
 
@@ -278,13 +281,15 @@ class CookieLaw implements CookieLawContract
             foreach (['header', 'body', 'footer'] as $part) {
                 if (!$this->config()->has("modal.content.{$part}")) {
                     $this->config([
-                        "modal.content.{$part}" => $this->view("modal/content-{$part}", $this->config()->all()),
+                        "modal.content.{$part}" => $this->view(
+                            "partial/modal/content-{$part}", $this->config()->all()
+                        ),
                     ]);
                 }
             }
 
             if (!$this->config()->has('modal.viewer.override_dir')) {
-                $this->config(['modal.viewer.override_dir' => $this->resources('views/modal')]);
+                $this->config(['modal.viewer.override_dir' => $this->resources('views/partial/modal')]);
             }
         }
 
@@ -296,7 +301,7 @@ class CookieLaw implements CookieLawContract
      */
     public function render(): string
     {
-        return $this->view('index', $this->config()->all());
+        return $this->view('partial/cookie-notice/index', $this->config()->all());
     }
 
     /**
