@@ -31,18 +31,16 @@ class CookieLawServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (($wp = $this->getContainer()->get('wp')) && $wp->is()) {
-            add_action('after_setup_theme', function () {
-                /** @var CookieLawContract $cookieLaw */
-                $cookieLaw = $this->getContainer()->get('cookie-law');
+        events()->listen('wp.booted', function () {
+            /** @var CookieLawContract $cookieLaw */
+            $cookieLaw = $this->getContainer()->get('cookie-law');
 
-                if ($adapter = $cookieLaw->resolve('wp-adapter')) {
-                    $cookieLaw->setAdapter($adapter);
-                }
+            if ($adapter = $cookieLaw->resolve('wp-adapter')) {
+                $cookieLaw->setAdapter($adapter);
+            }
 
-                return $cookieLaw->boot();
-            });
-        }
+            return $cookieLaw->boot();
+        });
     }
 
     /**

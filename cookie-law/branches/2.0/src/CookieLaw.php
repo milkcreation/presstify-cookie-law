@@ -25,7 +25,7 @@ class CookieLaw implements CookieLawContract
     private static $instance;
 
     /**
-     * Indicateur d'initialisation.
+     * Indicateur de chargement.
      * @var bool
      */
     private $booted = false;

@@ -35,7 +35,7 @@ interface CookieLaw
     public function adapter(): ?CookieLawAdapter;
 
     /**
-     * Initialisation du gestionnaire.
+     * Chargement.
      *
      * @return static
      */
