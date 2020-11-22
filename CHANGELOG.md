@@ -1,5 +1,12 @@
 # Release Notes
 
+## [v2.0.43 (2020-11-22)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.43...v2.0.43)
+
+### Changed
+
+- Chargement wp.booted
+- Correctif commentaires
+
 ## [v2.0.42 (2020-11-18)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.42...v2.0.42)
 
 ### Added 
