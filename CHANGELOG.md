@@ -1,5 +1,11 @@
 # Release Notes
 
+## [v2.0.44 (2020-11-30)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.44...v2.0.44)
+
+### Fixed 
+
+- PrivacyLinkPartial : before + after
+
 ## [v2.0.43 (2020-11-22)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.43...v2.0.43)
 
 ### Changed

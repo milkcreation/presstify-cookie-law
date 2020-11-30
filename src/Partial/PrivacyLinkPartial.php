@@ -14,7 +14,11 @@ class PrivacyLinkPartial extends AbstractPartialDriver
         }
 
         if ($modal = $this->cl()->modal()) {
-            return $modal->trigger($this->all());
+            ob_start();
+            $this->before();
+            echo $modal->trigger($this->all());
+            $this->after();
+            return ob_get_clean();
         }
 
         return parent::render();
