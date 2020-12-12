@@ -3,27 +3,26 @@
 namespace tiFy\Plugins\CookieLaw;
 
 use tiFy\Container\ServiceProvider;
+use tiFy\Contracts\Partial\Partial as PartialManagerContract;
 use tiFy\Plugins\CookieLaw\Adapter\WordpressAdapter;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
+use tiFy\Plugins\CookieLaw\Contracts\PrivacyLinkPartial as PrivacyLinkPartialContract;
+use tiFy\Plugins\CookieLaw\Contracts\WordpressAdapter as WordpressAdapterContract;
+use tiFy\Plugins\CookieLaw\Partial\PrivacyLinkPartial;
 use tiFy\Support\Proxy\View;
 
 class CookieLawServiceProvider extends ServiceProvider
 {
-    /**
-     * Instance du gestionnaire de plugin.
-     * @var CookieLawContract
-     */
-    protected $manager;
-
     /**
      * Liste des noms de qualification des services fournis.
      * @internal requis. Tous les noms de qualification de services à traiter doivent être renseignés.
      * @var string[]
      */
     protected $provides = [
-        'cookie-law',
+        CookieLawContract::class,
+        PrivacyLinkPartialContract::class,
+        WordpressAdapterContract::class,
         'cookie-law.view-engine',
-        'cookie-law.wp-adapter',
     ];
 
     /**
@@ -33,10 +32,10 @@ class CookieLawServiceProvider extends ServiceProvider
     {
         events()->listen('wp.booted', function () {
             /** @var CookieLawContract $cookieLaw */
-            $cookieLaw = $this->getContainer()->get('cookie-law');
+            $cookieLaw = $this->getContainer()->get(CookieLawContract::class);
 
-            if ($adapter = $cookieLaw->resolve('wp-adapter')) {
-                $cookieLaw->setAdapter($adapter);
+            if ($cookieLaw->containerHas(WordpressAdapterContract::class)) {
+                $cookieLaw->setAdapter($cookieLaw->containerGet(WordpressAdapterContract::class));
             }
 
             return $cookieLaw->boot();
@@ -48,13 +47,40 @@ class CookieLawServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->getContainer()->share('cookie-law', function () {
+        $this->getContainer()->share(CookieLawContract::class, function () {
             return new CookieLaw(config('cookie-law', []), $this->getContainer());
         });
 
+        $this->registerAdapters();
+        $this->registerPartials();
         $this->registerViewEngine();
+    }
 
-        $this->registerWpAdapter();
+    /**
+     * Déclaration des adapteurs.
+     *
+     * @return void
+     */
+    public function registerAdapters(): void
+    {
+        $this->getContainer()->share(WordpressAdapterContract::class, function (): WordpressAdapterContract {
+            return new WordpressAdapter($this->getContainer()->get(CookieLawContract::class));
+        });
+    }
+
+    /**
+     * Déclaration des pilotes de portions d'affichage.
+     *
+     * @return void
+     */
+    public function registerPartials(): void
+    {
+        $this->getContainer()->add(PrivacyLinkPartialContract::class, function ():PrivacyLinkPartialContract {
+            return new PrivacyLinkPartial(
+                $this->getContainer()->get(CookieLawContract::class),
+                $this->getContainer()->get(PartialManagerContract::class)
+            );
+        });
     }
 
     /**
@@ -66,25 +92,13 @@ class CookieLawServiceProvider extends ServiceProvider
     {
         $this->getContainer()->share('cookie-law.view-engine', function () {
             /** @var CookieLawContract $cookieLaw */
-            $cookieLaw = $this->getContainer()->get('cookie-law');
+            $cookieLaw = $this->getContainer()->get(CookieLawContract::class);
 
             return View::getPlatesEngine(array_merge([
                 'directory'  => $cookieLaw->resources('views'),
                 'factory'    => CookieLawView::class,
                 'cookie-law' => $cookieLaw,
             ], $cookieLaw->config('viewer', [])));
-        });
-    }
-
-    /**
-     * Déclaration du service d'adapteur Wordpress.
-     *
-     * @return void
-     */
-    public function registerWpAdapter(): void
-    {
-        $this->getContainer()->share('cookie-law.wp-adapter', function () {
-            return new WordpressAdapter($this->getContainer()->get('cookie-law'));
         });
     }
 }

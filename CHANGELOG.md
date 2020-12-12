@@ -1,5 +1,11 @@
 # Release Notes
 
+## [v2.0.45 (2020-12-12)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.45...v2.0.45)
+
+### Changed
+
+- Passe réécriture partial + SupportTraits + dossier resources
+
 ## [v2.0.44 (2020-11-30)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.44...v2.0.44)
 
 ### Fixed 
