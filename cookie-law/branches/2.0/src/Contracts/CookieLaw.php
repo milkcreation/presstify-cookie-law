@@ -9,6 +9,10 @@ use tiFy\Contracts\View\Engine as ViewEngine;
 use tiFy\Contracts\Filesystem\LocalFilesystem;
 use tiFy\Contracts\Support\ParamsBag;
 
+/**
+ * @mixin \tiFy\Support\Concerns\BootableTrait
+ * @mixin \tiFy\Support\Concerns\ContainerAwareTrait
+ */
 interface CookieLaw
 {
     /**
@@ -52,13 +56,6 @@ interface CookieLaw
     public function config($key = null, $default = null);
 
     /**
-     * Récupération du conteneur d'injection de dépendances.
-     *
-     * @return Container|null
-     */
-    public function getContainer(): ?Container;
-
-    /**
      * Récupération d'un service fourni par le conteneur d'injection de dépendance.
      *
      * @param string $name
@@ -80,24 +77,6 @@ interface CookieLaw
      * @return static
      */
     public function parseConfig(): CookieLaw;
-
-    /**
-     * Résolution de service fourni.
-     *
-     * @param string $alias
-     *
-     * @return object|mixed|null
-     */
-    public function resolve(string $alias);
-
-    /**
-     * Vérification de résolution possible d'un service fourni.
-     *
-     * @param string $alias
-     *
-     * @return bool
-     */
-    public function resolvable(string $alias): bool;
 
     /**
      * Chemin absolu vers une ressources (fichier|répertoire).
@@ -125,15 +104,6 @@ interface CookieLaw
      * @return static
      */
     public function setConfig(array $attrs): CookieLaw;
-
-    /**
-     * Définition du conteneur d'injection de dépendances.
-     *
-     * @param Container $container
-     *
-     * @return static
-     */
-    public function setContainer(Container $container): CookieLaw;
 
     /**
      * Affichage.

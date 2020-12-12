@@ -2,7 +2,9 @@
 
 namespace tiFy\Plugins\CookieLaw\Partial;
 
-class PrivacyLinkPartial extends AbstractPartialDriver
+use tiFy\Plugins\CookieLaw\Contracts\PrivacyLinkPartial as PrivacyLinkPartialContract;
+
+class PrivacyLinkPartial extends AbstractPartialDriver implements PrivacyLinkPartialContract
 {
     /**
      * @inheritDoc

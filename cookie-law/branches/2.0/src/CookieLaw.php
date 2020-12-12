@@ -5,30 +5,31 @@ namespace tiFy\Plugins\CookieLaw;
 use Exception;
 use Psr\Container\ContainerInterface as Container;
 use tiFy\Contracts\Filesystem\LocalFilesystem;
+use tiFy\Contracts\Partial\Partial as PartialManagerContract;
 use tiFy\Contracts\Partial\Modal;
 use tiFy\Contracts\View\Engine as ViewEngine;
+use tiFy\Partial\Partial;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLawAdapter;
+use tiFy\Plugins\CookieLaw\Contracts\PrivacyLinkPartial as PrivacyLinkPartialContract;
 use tiFy\Plugins\CookieLaw\Partial\PrivacyLinkPartial;
+use tiFy\Support\Concerns\BootableTrait;
+use tiFy\Support\Concerns\ContainerAwareTrait;
 use tiFy\Support\ParamsBag;
-use tiFy\Support\Proxy\Partial;
 use tiFy\Support\Proxy\Request;
 use tiFy\Support\Proxy\Router;
 use tiFy\Support\Proxy\Storage;
+use tiFy\Support\Proxy\View;
 
 class CookieLaw implements CookieLawContract
 {
+    use BootableTrait, ContainerAwareTrait;
+
     /**
      * Instance de la classe.
      * @var static|null
      */
     private static $instance;
-
-    /**
-     * Indicateur de chargement.
-     * @var bool
-     */
-    private $booted = false;
 
     /**
      * Liste des services par défaut fournis par conteneur d'injection de dépendances.
@@ -55,16 +56,16 @@ class CookieLaw implements CookieLawContract
     protected $config;
 
     /**
-     * Instance du conteneur d'injection de dépendances.
-     * @var Container|null
-     */
-    protected $container;
-
-    /**
      * Instance de la fenêtre modal d'affichage de la politique de confidentialité.
      * @var Modal|false|null
      */
     protected $modal;
+
+    /**
+     * Instance du gestionnaire de portions d'affichage.
+     * @var PartialManagerContract
+     */
+    protected $partialManager;
 
     /**
      * Moteur des gabarits d'affichage.
@@ -91,6 +92,9 @@ class CookieLaw implements CookieLawContract
         if (!is_null($container)) {
             $this->setContainer($container);
         }
+
+        $this->partialManager = $this->containerHas(PartialManagerContract::class)
+            ? $this->containerGet(PartialManagerContract::class) : Partial::instance();
 
         if (!self::$instance instanceof static) {
             self::$instance = $this;
@@ -130,14 +134,16 @@ class CookieLaw implements CookieLawContract
      */
     public function boot(): CookieLawContract
     {
-        if (!$this->booted) {
+        if (!$this->isBooted()) {
             $this->xhrModalUrl = Router::xhr(md5('CookieLaw'), [$this, 'xhrModal'])->getUrl();
 
-            Partial::register('privacy-link', (new PrivacyLinkPartial())->setCookieLaw($this));
+            $this->partialManager->register('privacy-link', $this->containerHas(PrivacyLinkPartialContract::class)
+                ? PrivacyLinkPartialContract::class : new PrivacyLinkPartial($this, $this->partialManager)
+            );
 
             $this->parseConfig();
 
-            $this->booted = true;
+            $this->setBooted();
         }
 
         return $this;
@@ -164,14 +170,6 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function getContainer(): ?Container
-    {
-        return $this->container;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getProvider(string $name)
     {
         return $this->config("providers.{$name}", $this->defaultProviders[$name] ?? null);
@@ -180,68 +178,10 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function resolve(string $alias)
-    {
-        return ($container = $this->getContainer()) ? $container->get("cookie-law.{$alias}") : null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function resolvable(string $alias): bool
-    {
-        return ($container = $this->getContainer()) && $container->has("cookie-law.{$alias}");
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function resources(?string $path = null)
-    {
-        if (!isset($this->resources) || is_null($this->resources)) {
-            $this->resources = Storage::local(dirname(__DIR__));
-        }
-
-        return is_null($path) ? $this->resources : $this->resources->path($path);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setAdapter(CookieLawAdapter $adapter): CookieLawContract
-    {
-        $this->adapter = $adapter;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setConfig(array $attrs): CookieLawContract
-    {
-        $this->config($attrs);
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setContainer(Container $container): CookieLawContract
-    {
-        $this->container = $container;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function modal(): ?Modal
     {
         if (is_null($this->modal) && ($this->config('modal') !== false)) {
-            $this->modal = Partial::get('modal', $this->config('modal', []));
+            $this->modal = $this->partialManager->get('modal', $this->config('modal', []));
         }
 
         return $this->modal;
@@ -274,7 +214,7 @@ class CookieLaw implements CookieLawContract
                         'options'   => ['show' => false, 'backdrop' => true],
                         'size'      => 'xl',
                         'in_footer' => false,
-                    ]
+                    ],
                 ]);
             }
 
@@ -299,6 +239,38 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
+    public function resources(?string $path = null)
+    {
+        if (!isset($this->resources) || is_null($this->resources)) {
+            $this->resources = Storage::local(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources');
+        }
+
+        return is_null($path) ? $this->resources : $this->resources->path($path);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAdapter(CookieLawAdapter $adapter): CookieLawContract
+    {
+        $this->adapter = $adapter;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setConfig(array $attrs): CookieLawContract
+    {
+        $this->config($attrs);
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function render(): string
     {
         return $this->view('partial/cookie-notice/index', $this->config()->all());
@@ -307,17 +279,18 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function view(?string $view = null, array $data = [])
+    public function view(?string $name = null, array $data = [])
     {
         if (is_null($this->viewEngine)) {
-            $this->viewEngine = $this->resolve('view-engine');
+            $this->viewEngine = $this->containerHas('cookie-law.view-engine')
+                ? $this->containerGet('cookie-law.view-engine') : View::getPlatesEngine();
         }
 
         if (func_num_args() === 0) {
             return $this->viewEngine;
         }
 
-        return $this->viewEngine->render($view, $data);
+        return $this->viewEngine->render($name, $data);
     }
 
     /**
