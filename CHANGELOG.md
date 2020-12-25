@@ -1,5 +1,11 @@
 # Release Notes
 
+## [v2.0.46 (2020-12-25)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.46...v2.0.46)
+
+### Fixed
+
+- Ajustements syntaxe PSR
+
 ## [v2.0.45 (2020-12-12)](https://svn.tigreblanc.fr/presstify-plugins/cookie-law/tags/2.0.45...v2.0.45)
 
 ### Changed
