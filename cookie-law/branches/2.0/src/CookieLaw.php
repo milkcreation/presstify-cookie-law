@@ -2,7 +2,7 @@
 
 namespace tiFy\Plugins\CookieLaw;
 
-use Exception;
+use RuntimeException;
 use Psr\Container\ContainerInterface as Container;
 use tiFy\Contracts\Filesystem\LocalFilesystem;
 use tiFy\Contracts\Partial\Partial as PartialManagerContract;
@@ -109,8 +109,7 @@ class CookieLaw implements CookieLawContract
         if (self::$instance instanceof self) {
             return self::$instance;
         }
-
-        throw new Exception(sprintf('Unavailable %s instance', __CLASS__));
+        throw new RuntimeException(sprintf('Unavailable %s instance', __CLASS__));
     }
 
     /**
@@ -137,7 +136,9 @@ class CookieLaw implements CookieLawContract
         if (!$this->isBooted()) {
             $this->xhrModalUrl = Router::xhr(md5('CookieLaw'), [$this, 'xhrModal'])->getUrl();
 
-            $this->partialManager->register('privacy-link', $this->containerHas(PrivacyLinkPartialContract::class)
+            $this->partialManager->register(
+                'privacy-link',
+                $this->containerHas(PrivacyLinkPartialContract::class)
                 ? PrivacyLinkPartialContract::class : new PrivacyLinkPartial($this, $this->partialManager)
             );
 
@@ -222,7 +223,8 @@ class CookieLaw implements CookieLawContract
                 if (!$this->config()->has("modal.content.{$part}")) {
                     $this->config([
                         "modal.content.{$part}" => $this->view(
-                            "partial/modal/content-{$part}", $this->config()->all()
+                            "partial/modal/content-{$part}",
+                            $this->config()->all()
                         ),
                     ]);
                 }
