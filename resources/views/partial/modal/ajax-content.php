@@ -1,6 +1,6 @@
 <?php
 /**
- * @var tiFy\Partial\PartialView $this
+ * @var Pollen\Partial\PartialViewLoaderInterface $this
  */
 ?>
 <div class="modal-header">

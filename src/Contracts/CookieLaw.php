@@ -1,10 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace tiFy\Plugins\CookieLaw\Contracts;
 
 use Exception;
-use Psr\Container\ContainerInterface as Container;
-use tiFy\Contracts\Partial\Modal;
+use Pollen\Partial\Drivers\ModalDriverInterface;
+use Pollen\Support\Proxy\PartialProxyInterface;
 use tiFy\Contracts\View\Engine as ViewEngine;
 use tiFy\Contracts\Filesystem\LocalFilesystem;
 use tiFy\Contracts\Support\ParamsBag;
@@ -13,7 +15,7 @@ use tiFy\Contracts\Support\ParamsBag;
  * @mixin \tiFy\Support\Concerns\BootableTrait
  * @mixin \tiFy\Support\Concerns\ContainerAwareTrait
  */
-interface CookieLaw
+interface CookieLaw extends PartialProxyInterface
 {
     /**
      * Récupération de l'instance de l'extension.
@@ -67,9 +69,9 @@ interface CookieLaw
     /**
      * Récupération de l'instance de la fenêtre modale.
      *
-     * @return Modal|null
+     * @return ModalDriverInterface|null
      */
-    public function modal(): ?Modal;
+    public function modal(): ?ModalDriverInterface;
 
     /**
      * Traitement des attributs de configuration.

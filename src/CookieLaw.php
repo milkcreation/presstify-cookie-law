@@ -1,14 +1,16 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace tiFy\Plugins\CookieLaw;
 
+use Pollen\Partial\Drivers\ModalDriverInterface;
+use Pollen\Support\Proxy\PartialProxy;
 use RuntimeException;
+use Pollen\Partial\Drivers\ModalDriver;
 use Psr\Container\ContainerInterface as Container;
 use tiFy\Contracts\Filesystem\LocalFilesystem;
-use tiFy\Contracts\Partial\Partial as PartialManagerContract;
-use tiFy\Contracts\Partial\Modal;
 use tiFy\Contracts\View\Engine as ViewEngine;
-use tiFy\Partial\Partial;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLaw as CookieLawContract;
 use tiFy\Plugins\CookieLaw\Contracts\CookieLawAdapter;
 use tiFy\Plugins\CookieLaw\Contracts\PrivacyLinkPartial as PrivacyLinkPartialContract;
@@ -23,7 +25,9 @@ use tiFy\Support\Proxy\View;
 
 class CookieLaw implements CookieLawContract
 {
-    use BootableTrait, ContainerAwareTrait;
+    use BootableTrait;
+    use ContainerAwareTrait;
+    use PartialProxy;
 
     /**
      * Instance de la classe.
@@ -57,15 +61,9 @@ class CookieLaw implements CookieLawContract
 
     /**
      * Instance de la fenêtre modal d'affichage de la politique de confidentialité.
-     * @var Modal|false|null
+     * @var ModalDriver|false|null
      */
     protected $modal;
-
-    /**
-     * Instance du gestionnaire de portions d'affichage.
-     * @var PartialManagerContract
-     */
-    protected $partialManager;
 
     /**
      * Moteur des gabarits d'affichage.
@@ -92,9 +90,6 @@ class CookieLaw implements CookieLawContract
         if (!is_null($container)) {
             $this->setContainer($container);
         }
-
-        $this->partialManager = $this->containerHas(PartialManagerContract::class)
-            ? $this->containerGet(PartialManagerContract::class) : Partial::instance();
 
         if (!self::$instance instanceof static) {
             self::$instance = $this;
@@ -136,10 +131,10 @@ class CookieLaw implements CookieLawContract
         if (!$this->isBooted()) {
             $this->xhrModalUrl = Router::xhr(md5('CookieLaw'), [$this, 'xhrModal'])->getUrl();
 
-            $this->partialManager->register(
+            $this->partial()->register(
                 'privacy-link',
                 $this->containerHas(PrivacyLinkPartialContract::class)
-                ? PrivacyLinkPartialContract::class : new PrivacyLinkPartial($this, $this->partialManager)
+                ? PrivacyLinkPartialContract::class : new PrivacyLinkPartial($this, $this->partial())
             );
 
             $this->parseConfig();
@@ -161,11 +156,12 @@ class CookieLaw implements CookieLawContract
 
         if (is_string($key)) {
             return $this->config->get($key, $default);
-        } elseif (is_array($key)) {
-            return $this->config->set($key);
-        } else {
-            return $this->config;
         }
+        if (is_array($key)) {
+            return $this->config->set($key);
+        }
+
+        return $this->config;
     }
 
     /**
@@ -179,7 +175,7 @@ class CookieLaw implements CookieLawContract
     /**
      * @inheritDoc
      */
-    public function modal(): ?Modal
+    public function modal(): ?ModalDriverInterface
     {
         if (is_null($this->modal) && ($this->config('modal') !== false)) {
             $this->modal = $this->partialManager->get('modal', $this->config('modal', []));

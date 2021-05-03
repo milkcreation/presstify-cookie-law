@@ -1,12 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace tiFy\Plugins\CookieLaw\Partial;
 
 use BadMethodCallException;
 use Exception;
-use tiFy\Contracts\Partial\Modal;
+use Pollen\Partial\Drivers\ModalDriverInterface;
+use Pollen\Partial\PartialViewLoader;
 use tiFy\Wordpress\Contracts\Query\QueryPost;
-use tiFy\Partial\PartialView;
 
 /**
  * @method string after()
@@ -15,10 +17,10 @@ use tiFy\Partial\PartialView;
  * @method string content()
  * @method string getId()
  * @method string getIndex()
- * @method Modal modal()
+ * @method ModalDriverInterface modal()
  * @method false|QueryPost privacyPolicy()
  */
-class CookieLawPartialView extends PartialView
+class CookieLawPartialView extends PartialViewLoader
 {
     /**
      * Liste des méthodes héritées.
@@ -34,25 +36,4 @@ class CookieLawPartialView extends PartialView
         'modal',
         'privacyPolicy'
     ];
-
-    /**
-     * @inheritDoc
-     */
-    public function __call($name, $arguments)
-    {
-        if (in_array($name, $this->mixins)) {
-            try {
-                $cookieLaw = $this->engine->params('cookie-law');
-
-                return $cookieLaw->{$name}(...$arguments);
-            } catch (Exception $e) {
-                throw new BadMethodCallException(sprintf(
-                    __CLASS__ . ' throws an exception during the method call [%s] with message : %s',
-                    $name, $e->getMessage()
-                ));
-            }
-        } else {
-            return parent::__call($name, $arguments);
-        }
-    }
 }
