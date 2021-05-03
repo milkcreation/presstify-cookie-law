@@ -1,17 +1,19 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace tiFy\Plugins\CookieLaw\Partial;
 
+use Pollen\Partial\PartialDriver;
+use Pollen\Partial\PartialManagerInterface;
 use tiFy\Plugins\CookieLaw\CookieLaw as CookieLawManager;
-use tiFy\Contracts\Partial\Partial as PartialManager;
-use tiFy\Partial\PartialDriver;
 use tiFy\Plugins\CookieLaw\CookieLawAwareTrait;
 
 abstract class AbstractPartialDriver extends PartialDriver
 {
     use CookieLawAwareTrait;
 
-    public function __construct(CookieLawManager $cookieLawManager, PartialManager $partialManager)
+    public function __construct(CookieLawManager $cookieLawManager, PartialManagerInterface $partialManager)
     {
         $this->setCookieLaw($cookieLawManager);
 
@@ -26,8 +28,8 @@ abstract class AbstractPartialDriver extends PartialDriver
         if (is_null($this->viewEngine)) {
             $viewEngine = parent::view();
             $viewEngine
-                ->setParams(['cookie-law' => $this->cl])
-                ->setFactory(CookieLawPartialView::class);
+                ->setDelegate($this->cl)
+                ->setLoader(CookieLawPartialView::class);
         }
 
         return parent::view($view, $data);

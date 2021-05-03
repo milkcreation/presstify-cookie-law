@@ -30,7 +30,7 @@ class CookieLawServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        events()->listen('wp.booted', function () {
+        events()->on('wp.booted', function () {
             /** @var CookieLawContract $cookieLaw */
             $cookieLaw = $this->getContainer()->get(CookieLawContract::class);
 
