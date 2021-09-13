@@ -11,19 +11,13 @@
     "gprd"
   ],
   "type": "presstify-plugin",
-  "time": "2021-05-03",
+  "time": "2021-09-13",
   "license": "MIT",
   "authors": [
     {
       "name": "Jordy Manner",
       "email": "jordy.manner@milkcreation.fr",
       "role": "Developper"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://composer.tigreblanc.fr/presstify/"
     }
   ],
   "require": {
